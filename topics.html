@@ -13,6 +13,10 @@
 
   <header class="topics__header">
     <a class="home-link" href="index.html">← Back</a>
+    <span class="me" id="me" hidden>
+      <span id="meName"></span>
+      <button class="me__out" type="button" id="logoutButton">out</button>
+    </span>
   </header>
 
   <main class="topics">
@@ -25,6 +29,7 @@
   <!-- 순서 주의: 라이브러리 → 접속 설정 → 페이지 코드 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js?v=143923"></script>
+  <script src="js/auth.js?v=143923"></script>
   <script src="js/topics.js?v=143923"></script>
 </body>
 </html>

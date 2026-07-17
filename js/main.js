@@ -10,7 +10,7 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
 // 봉투가 열리는 걸 볼 새도 없이 초대장이 덮쳐 급해 보인다.
 // 폰에서만 봉투가 다 열릴 때까지 기다렸다가 넘어간다.
 const 터치기기 = window.matchMedia('(hover: none)').matches || window.matchMedia('(max-width: 700px)').matches;
-const 초대장까지 = 터치기기 ? 1000 : 260;
+const 초대장까지 = 터치기기 ? 1400 : 260;
 
 function 초대장열기() {
   // 터치 기기에는 마우스 오버가 없으니, 누른 순간 봉투를 열어서 보여준다

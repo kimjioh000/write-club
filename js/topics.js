@@ -88,4 +88,21 @@ async function load() {
   render(data);
 }
 
+// ===== 로그인 상태 =====
+// 이 페이지에서는 로그인을 하지는 않고, 지금 누구인지 보여주고 나갈 수만 있게 한다.
+
+const meBox = document.getElementById('me');
+const meName = document.getElementById('meName');
+
+document.getElementById('logoutButton').addEventListener('click', async () => {
+  await 로그아웃();
+  meBox.hidden = true;
+});
+
+(async () => {
+  const 나 = await 지금로그인한사람();
+  meBox.hidden = !나;
+  meName.textContent = 사람의닉네임(나);
+})();
+
 load();
