@@ -3,7 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>500자 글쓰기 모임</title>
+  <title>Writing Club</title>
+
+  <!-- 카톡이나 메신저에 링크를 붙였을 때 뜨는 정보.
+       이게 없으면 제목만 덩그러니 뜨고 그림이 안 나온다.
+       og:image는 반드시 전체 주소여야 하고, webp는 카톡이 못 읽을 수 있어 jpg로 둔다. -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Writing Club">
+  <meta property="og:description" content="3일마다 500자. 초대장을 열어보세요.">
+  <meta property="og:image" content="https://write-club.vercel.app/images/og.jpg">
+  <meta property="og:url" content="https://write-club.vercel.app">
+  <meta name="twitter:card" content="summary_large_image">
+
   <!-- 초대장 위 로그인 글씨가 명조로 나오려면 이게 있어야 한다.
        없으면 명조를 못 찾고 다음 후보인 고딕으로 넘어간다. -->
   <link rel="preconnect" href="https://fonts.googleapis.com">

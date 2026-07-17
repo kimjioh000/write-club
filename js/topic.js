@@ -279,7 +279,7 @@ async function load() {
   }
 
   topicNameEl.textContent = topicResult.data.name;
-  document.title = `${topicResult.data.name} — 500자 글쓰기 모임`;
+  document.title = `${topicResult.data.name} — Writing Club`;
   renderWriters(postsResult.data);
   render(postsResult.data);
 }
