@@ -5,11 +5,18 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
 
 // 초대장 화면으로 넘어간다. 로그인한 사람은 그대로 통과하고,
 // 아직인 사람은 초대장 위에서 로그인할 때까지 여기 머문다.
+// 폰에는 마우스를 올리는 과정이 없다. 데스크탑에서는 봉투가 이미 열린 채로 누르지만,
+// 폰에서는 누르는 순간 열리기 시작한다. 그래서 같은 속도로 넘기면
+// 봉투가 열리는 걸 볼 새도 없이 초대장이 덮쳐 급해 보인다.
+// 폰에서만 봉투가 다 열릴 때까지 기다렸다가 넘어간다.
+const 터치기기 = window.matchMedia('(hover: none)').matches || window.matchMedia('(max-width: 700px)').matches;
+const 초대장까지 = 터치기기 ? 1000 : 260;
+
 function 초대장열기() {
   // 터치 기기에는 마우스 오버가 없으니, 누른 순간 봉투를 열어서 보여준다
   envelope.classList.add('is-open');
-  setTimeout(() => document.body.classList.add('is-leaving'), 260);
-  if (나) setTimeout(들어가기, 1100);
+  setTimeout(() => document.body.classList.add('is-leaving'), 초대장까지);
+  if (나) setTimeout(들어가기, 초대장까지 + 840);
 }
 
 function 들어가기() {

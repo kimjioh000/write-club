@@ -827,11 +827,28 @@ body {
 
   /* 초대장이 작아진 만큼 그 위의 로그인 자리도 따라 올라온다 */
   .transition__auth {
-    top: calc(50% + 6vh);
+    top: calc(50% + 5vh);
   }
 
+  /* 종이는 카드 폭의 75%뿐이다(캔버스 좌우에 투명한 여백이 있다).
+     거기에 종이 안쪽 여백까지 빼야 밑줄이 종이 밖으로 안 나간다.
+     0.75 × 0.72 ≈ 0.54 — 카드가 1.9배로 커지는 것도 함께 계산한다. */
   .invite {
-    width: calc(min(40vw, 24vh) * 1.9 * 0.56);
+    width: calc(min(40vw, 24vh) * 1.9 * 0.54);
+    gap: 0.6rem;
+  }
+
+  .invite__field {
+    font-size: 0.6rem;
+  }
+
+  .invite__go,
+  .invite__toggle {
+    font-size: 0.58rem;
+  }
+
+  .invite__actions {
+    gap: 0.7rem;
   }
 
   /* 단어 목록: 글씨를 줄이고 좌우 흔들림도 줄여 화면 안에 들어오게 */
