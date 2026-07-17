@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>500자 글쓰기 모임</title>
+  <!-- 초대장 위 로그인 글씨가 명조로 나오려면 이게 있어야 한다.
+       없으면 명조를 못 찾고 다음 후보인 고딕으로 넘어간다. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css?v=143923">
+</head>
+<body class="main-page">
+
+  <main class="stage">
+    <!-- 봉투 전체가 하나의 링크. 마우스를 올리면 열리고, 누르면 초대장이 커진다 -->
+    <a class="envelope" href="topics.html" aria-label="초대장 열어보기">
+      <img class="layer layer--closed" src="images/envelope-closed.webp" alt="닫힌 편지봉투">
+      <img class="layer layer--open" src="images/envelope-open.webp" alt="열린 편지봉투와 초대장">
+    </a>
+  </main>
+
+  <!-- 봉투를 누르면 초대장이 화면을 채우며 커진다.
+       여기가 관문이다. 로그인해야 다음으로 넘어간다. -->
+  <div class="transition" id="transition">
+    <img class="transition__card" src="images/invitation.webp" alt="초대장">
+
+    <!-- 초대장 종이 위에 직접 적는다. 따로 창을 띄우지 않는다. -->
+    <div class="transition__auth" id="entryAuth">
+      <form class="invite" id="authForm">
+        <input class="invite__field" id="authName" type="text" required maxlength="30"
+               placeholder="name" autocomplete="username">
+        <input class="invite__field" id="authPassword" type="password" required
+               minlength="4" maxlength="72" placeholder="password" autocomplete="current-password">
+
+        <p class="invite__error" id="authError" hidden></p>
+
+        <div class="invite__actions">
+          <button class="invite__go" type="submit" id="authSubmit">sign in</button>
+          <button class="invite__toggle" type="button" id="authToggle">sign up</button>
+        </div>
+      </form>
+
+      <!-- 이미 로그인한 사람에게 보이는 줄 -->
+      <p class="invite__me" id="mainMe" hidden>
+        <span id="mainMeName"></span>
+        <button class="invite__toggle" id="mainSignOut" type="button">out</button>
+      </p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js?v=143923"></script>
+  <script src="js/auth.js?v=143923"></script>
+  <script src="js/main.js?v=143923"></script>
+</body>
+</html>

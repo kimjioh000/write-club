@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>주제 — 500자 글쓰기 모임</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Nanum+Myeongjo:wght@400;800&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css?v=143923">
+</head>
+<body class="topics-page">
+
+  <header class="topics__header">
+    <a class="home-link" href="index.html">← Back</a>
+  </header>
+
+  <main class="topics">
+    <!-- 단어 목록은 js/topics.js가 채운다 -->
+    <ol class="topics__list" id="topicList">
+      <li class="topics__loading">Loading…</li>
+    </ol>
+  </main>
+
+  <!-- 순서 주의: 라이브러리 → 접속 설정 → 페이지 코드 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js?v=143923"></script>
+  <script src="js/topics.js?v=143923"></script>
+</body>
+</html>

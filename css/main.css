@@ -1,0 +1,913 @@
+/* ===== 공통 =====
+   모든 페이지가 같이 쓰는 기본값. 색을 바꾸고 싶으면 아래 변수만 고치면 된다. */
+
+:root {
+  --ink: #1e1a24;          /* 글자색 (거의 검정) */
+  --ink-dim: #8a8494;      /* 흐린 글자색 */
+  --paper: #ffffff;        /* 배경 */
+  --star: #0033ff;         /* 포인트 파랑 */
+  /* 글은 명조로 읽고, 버튼·링크 같은 안내 글씨는 고딕으로 읽는다 */
+  --serif: 'Nanum Myeongjo', 'Apple SD Gothic Neo', serif;
+  --sans: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* 숨기라고 한 것은 무조건 숨는다.
+   display: flex 같은 걸 걸어둔 요소는 hidden 속성이 먹지 않기 때문이다. */
+[hidden] {
+  display: none !important;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--serif);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== 메인 페이지 ===== */
+
+/* 메인만 검은 배경. --paper를 바꾸면 배경과 전환 화면이 한꺼번에 따라온다 */
+.main-page {
+  --paper: #000000;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.stage {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  padding: 4vmin;
+}
+
+/* 초대장 종이 위에 직접 적는 자리.
+   따로 창을 띄우지 않고 종이에 답장하듯 이름을 적는다. */
+.invite {
+  display: grid;
+  gap: 0.9rem;
+  /* 종이 폭에 맞춘다. 종이는 카드 폭의 약 75%이고, 카드는 1.9배로 커진다 */
+  width: calc(min(35.2vw, 26.4vh) * 1.9 * 0.5);
+}
+
+/* 종이 위에 연필로 적는 느낌. 상자를 그리지 않고 밑줄만 남긴다 */
+/* 명조 이탤릭. 손글씨 초대장에 펜으로 적어 넣는 결을 맞춘다.
+   명조는 고딕보다 작아 보여서 크기를 조금 올렸다.
+   밑줄은 border 대신 SVG로 직접 그린다. border는 굵기가 처음부터 끝까지 같아서
+   자로 그은 것처럼 보이는데, 손으로 그은 선은 필압에 따라 굵기가 변하기 때문이다. */
+.invite__field {
+  padding: 0.25em 0.1em 0.45em;
+  border: none;
+  border-radius: 0;
+  background: none;
+  background-repeat: no-repeat;
+  background-position: bottom center;
+  background-size: 100% 5px;
+  color: #1e1a24;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.72rem;
+  text-align: center;
+}
+
+/* 두 선의 생김새를 다르게 해야 같은 선을 복사한 티가 안 난다.
+   path의 위쪽 곡선과 아래쪽 곡선을 어긋나게 그리면 그 사이 간격이 곧 선의 굵기가 된다. */
+/* 첫 줄: 왼쪽에서 눌러 시작해 오른쪽으로 갈수록 힘이 빠지며 가늘어진다 */
+.invite__field:nth-of-type(1) {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 8' preserveAspectRatio='none'%3E%3Cpath d='M2,3.1 C40,2.2 84,1.9 130,2.5 C160,2.9 182,3.2 198,2.9 L198.4,3.45 C182,3.9 160,3.6 130,3.3 C84,2.9 40,3.5 2,4.6 Z' fill='%231e1a24' fill-opacity='0.62'/%3E%3C/svg%3E");
+}
+
+/* 둘째 줄: 가운데쯤에서 가장 눌리고 양끝이 흐려지는, 조금 더 출렁이는 선 */
+.invite__field:nth-of-type(2) {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 8' preserveAspectRatio='none'%3E%3Cpath d='M2,3.5 C36,4.2 70,2.5 118,3.0 C154,3.4 178,2.8 198,3.2 L198.3,3.6 C178,3.5 154,4.5 118,4.05 C70,3.5 36,5.0 2,4.0 Z' fill='%231e1a24' fill-opacity='0.62'/%3E%3C/svg%3E");
+}
+
+.invite__field::placeholder {
+  color: rgba(30, 26, 36, 0.32);
+}
+
+.invite__field:focus {
+  outline: none;
+  border-bottom-color: var(--star);
+}
+
+.invite__actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.3rem;
+}
+
+.invite__go,
+.invite__toggle {
+  padding: 0;
+  border: none;
+  background: none;
+  color: #1e1a24;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: color 200ms ease;
+}
+
+/* 주된 행동이라 밑줄로 조금 더 힘을 준다 */
+.invite__go {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.invite__toggle {
+  color: rgba(30, 26, 36, 0.45);
+}
+
+.invite__go:hover,
+.invite__toggle:hover {
+  color: var(--star);
+}
+
+.invite__go:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.invite__error {
+  color: #b3261e;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.65rem;
+  text-align: center;
+}
+
+.invite__me {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.6rem;
+  color: #1e1a24;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+/* 크림색 종이 위에 얹히므로 글씨는 어두워야 읽힌다 */
+.entry__button,
+.entry__out {
+  padding: 0;
+  border: none;
+  background: none;
+  color: #3d3846;
+  font-family: var(--sans);
+  font-size: 0.6rem;
+  cursor: pointer;
+  transition: color 200ms ease;
+}
+
+.entry__button:hover,
+.entry__out:hover {
+  color: var(--star);
+}
+
+.entry__me {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  color: #3d3846;
+  font-family: var(--sans);
+  font-size: 0.6rem;
+  white-space: nowrap;
+}
+
+.entry__out {
+  font-size: 0.58rem;
+  text-decoration: underline;
+}
+
+/* 봉투: 두 장의 이미지를 완전히 겹쳐두고 투명도만 바꿔서 열리는 것처럼 보이게 한다.
+   두 이미지의 캔버스 크기가 1952x2192로 같아서 겹쳐도 위치가 어긋나지 않는다. */
+/* 닫힌 봉투는 이미지 안에서 아래쪽(중심 y 67.3%)에 그려져 있다.
+   그대로 두면 화면 가운데 정렬을 해도 봉투가 아래로 처져 보이므로,
+   그 차이(67.3 - 50 = 17.3%)만큼 끌어올린다.
+   열린 봉투도 같은 값으로 함께 움직여야 열리는 동작이 어긋나지 않는다. */
+.envelope {
+  position: relative;
+  display: block;
+  width: min(35.2vw, 26.4vh);
+  aspect-ratio: 1952 / 2192;
+  cursor: pointer;
+  transform: translateY(-17.3%);
+  transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.envelope:hover,
+.envelope:focus-visible {
+  transform: translateY(calc(-17.3% - 1.2vmin)) scale(1.03);
+}
+
+.envelope:focus-visible {
+  outline: 2px solid var(--star);
+  outline-offset: 2vmin;
+  border-radius: 4px;
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  /* 검은 배경에서는 크림색 종이가 저절로 도드라져서 그림자가 필요 없다 */
+  transition: opacity 550ms ease;
+}
+
+.layer--open {
+  opacity: 0;
+}
+
+/* .is-open은 JS가 붙인다. 마우스 오버가 없는 터치 기기에서 누른 순간 봉투를 열기 위한 것 */
+.envelope:hover .layer--closed,
+.envelope:focus-visible .layer--closed,
+.envelope.is-open .layer--closed {
+  opacity: 0;
+}
+
+.envelope:hover .layer--open,
+.envelope:focus-visible .layer--open,
+.envelope.is-open .layer--open {
+  opacity: 1;
+}
+
+/* ===== 클릭 후 페이지 전환 =====
+   초대장이 화면을 채우며 커지는 동안 다음 페이지로 넘어간다. */
+
+.transition {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--paper);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 400ms ease;
+}
+
+.transition__card {
+  width: min(35.2vw, 26.4vh);
+  aspect-ratio: 1952 / 2192;
+  object-fit: contain;
+  transform: scale(0.9);
+  transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* JS가 body에 이 클래스를 붙이면 초대장이 펼쳐진다 */
+.is-leaving .transition {
+  opacity: 1;
+  /* 초대장 위 로그인 버튼을 눌러야 하므로 이때부터 클릭이 통한다 */
+  pointer-events: auto;
+}
+
+.is-leaving .transition__card {
+  transform: scale(1.9);
+}
+
+/* 초대장 종이 위에 앉는 로그인 자리.
+   카드는 scale로 커지지만 이 버튼은 그대로여야 글씨 크기가 안 변한다.
+   그래서 카드에 붙이지 않고, 커진 카드의 높이만큼을 계산해 따로 앉힌다. */
+.transition__auth {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 9vh);
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 500ms ease 450ms;
+}
+
+.is-leaving .transition__auth {
+  opacity: 1;
+}
+
+/* ===== 주제 목록 페이지 ===== */
+
+/* 이 페이지만 흑백을 뒤집는다.
+   --ink와 --paper를 맞바꾸면 배경·박스·글자가 한꺼번에 따라온다. */
+.topics-page {
+  --paper: #000000;
+  --ink: #ffffff;
+}
+
+/* 배경 포스터를 별도 레이어로 깐다.
+   배경에 직접 blur를 걸면 그 위의 흰 박스와 글자까지 같이 흐려지기 때문이다.
+   inset을 음수로 줘서 밖으로 넓히는 이유: blur는 가장자리를 투명하게 번지게 해서,
+   딱 맞게 깔면 화면 테두리에 흐린 띠가 생긴다. */
+.topics-page::before {
+  content: '';
+  position: fixed;
+  inset: -40px;
+  z-index: -1;
+  background: url('../images/topics-bg.webp') center top / cover no-repeat;
+  filter: blur(5px) brightness(0.85);
+}
+
+.topics__header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 3vmin 4vmin;
+  z-index: 2;
+  /* 글자가 목록 위로 스크롤되어 지나갈 때 겹쳐 보이지 않도록 */
+  background: linear-gradient(var(--paper) 55%, transparent);
+}
+
+.home-link {
+  color: var(--ink-dim);
+  font-family: var(--sans);
+  font-size: 0.67rem;
+  text-decoration: none;
+  transition: color 250ms ease;
+}
+
+.home-link:hover {
+  color: var(--star);
+}
+
+.topics {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 22vmin 6vmin;
+}
+
+.topics__list {
+  list-style: none;
+  text-align: center;
+}
+
+.topics__loading {
+  color: var(--ink-dim);
+  font-size: 1rem;
+}
+
+/* 단어들은 검은 박스에 흰 글씨로 한 줄로 쌓인다.
+   박스 폭은 단어 길이에 따라 저절로 정해지고, 좌우 위치만 조금씩 어긋난다. */
+.topics__item {
+  /* 좌우로 밀어서 어긋나게 한다. vmin이라 화면이 좁아지면 어긋남도 같이 줄어든다 */
+  transform: translateX(calc(var(--shift, 0) * 1vmin));
+  margin-bottom: calc(var(--gap, 1) * 1rem);
+  /* 순번(--i)만큼 늦게 나타나서 위에서부터 하나씩 떠오른다 */
+  animation: rise 700ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  animation-delay: calc(var(--i) * 90ms);
+}
+
+.topic-link {
+  display: inline-block;
+  padding: 0.32em 0.55em;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--sans);
+  font-weight: 400;
+  font-size: 2rem;
+  line-height: 1.35;
+  /* 넓은 자간이 이 레퍼런스의 핵심이다.
+     자간은 마지막 글자 뒤에도 붙어서 오른쪽 여백이 커 보이므로, 그만큼 왼쪽으로 당겨준다 */
+  letter-spacing: 0.38em;
+  text-indent: 0.38em;
+  text-decoration: none;
+  transition: background 200ms ease, color 200ms ease;
+}
+
+/* 고르면 박스가 통째로 뒤집힌다. 흰 박스에 검은 글씨 → 검은 박스에 흰 글씨.
+   배경도 검정이라 박스가 배경에 녹아들고 글자만 남는 것처럼 보인다. */
+.topic-link:hover,
+.topic-link:focus-visible {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+/* 떠오르는 동안에도 좌우 위치는 그대로 유지해야 제자리로 안착한다 */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translate(calc(var(--shift, 0) * 1vmin), 1.4rem);
+  }
+  to {
+    opacity: 1;
+    transform: translate(calc(var(--shift, 0) * 1vmin), 0);
+  }
+}
+
+/* ===== 단어 페이지 ===== */
+
+.topic__header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 2.5vmin 4vmin;
+  background: linear-gradient(var(--paper) 70%, transparent);
+}
+
+.topic__name {
+  flex: 1;
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--ink-dim);
+  text-align: center;
+}
+
+.write-button {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: none;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 0.63rem;
+  cursor: pointer;
+  transition: background 200ms ease, color 200ms ease;
+}
+
+.write-button:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* 참여자 명단. 왼쪽에 세로 기둥 하나로 선다.
+   writing-mode를 세로로 돌리면 글자가 위에서 아래로 흐르고,
+   li를 inline-block으로 두면 이름들이 줄을 바꾸지 않고 그 기둥을 따라 이어진다. */
+.writers {
+  /* fixed가 아니라 absolute다. 페이지에 붙어서 글과 함께 흘러야
+     명단이 길어져도 잘리지 않고 스크롤을 따라 내려간다. */
+  position: absolute;
+  top: 16vmin;
+  /* Write 버튼 글자의 'e' 바로 아래로 떨어지는 자리.
+     헤더 좌우 여백(4vmin) + 버튼 안쪽 여백(1rem)이 기본이고,
+     끝의 3.2px는 'e'의 중심과 기둥의 중심을 맞추려고 실제로 재서 넣은 값이다. */
+  right: calc(4vmin + 1rem - 3.2px);
+  z-index: 1;
+  writing-mode: vertical-rl;
+  list-style: none;
+  /* 이게 없으면 세로 공간이 모자랄 때 이름들이 옆 줄로 넘어가 두 기둥이 된다.
+     줄바꿈을 막아야 한 줄로 쭉 내려간다. */
+  white-space: nowrap;
+  color: #9b9b9b;
+  font-family: var(--sans);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  pointer-events: none;
+}
+
+.writers__name {
+  display: inline-block;
+  /* 세로로 흐르는 중이라, 아래 여백이 이름과 이름 사이의 간격이 된다 */
+  margin-bottom: 1.5rem;
+}
+
+/* 문장들이 놓이는 판. 높이는 글 수에 따라 js/topic.js가 정한다 */
+.field {
+  position: relative;
+  max-width: 68rem;
+  /* 위쪽 여백은 고정된 헤더에 첫 문장이 가리지 않게 하려는 것 */
+  margin: 14vmin auto 8rem;
+  padding: 0 4vmin;
+}
+
+.field__message {
+  padding: 30vh 4vmin;
+  color: var(--ink-dim);
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  text-align: center;
+}
+
+/* 글 하나 = 제목 + 제목을 반복한 무늬가 붙은 덩어리.
+   레퍼런스처럼 큰 글씨와 깨알 글씨가 한 몸으로 움직인다. */
+.cluster {
+  position: absolute;
+  display: flex;
+  gap: 0.4em;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  /* 숨 쉬듯 아주 조금 위아래로 움직인다 */
+  animation: breathe calc(var(--float-time, 12) * 1s) ease-in-out infinite;
+  animation-delay: calc(var(--float-delay, 0) * -1s);
+  transition: color 200ms ease;
+}
+
+@keyframes breathe {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-11px); }
+}
+
+/* 제목과 무늬가 붙는 방향. 덩어리마다 달라서 그리드가 생기지 않는다 */
+.is-below { flex-direction: column; align-items: flex-start; }
+.is-above { flex-direction: column-reverse; align-items: flex-start; }
+.is-right { flex-direction: row; align-items: flex-start; }
+.is-left  { flex-direction: row-reverse; align-items: flex-end; }
+
+.cluster__title {
+  font-family: var(--sans);
+  font-weight: 800;
+  font-size: calc(var(--title-size, 3) * 1rem);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  /* 제목이 길면 글자 단위로 접어서 덩어리 모양을 만든다 */
+  max-width: 5em;
+  word-break: break-all;
+}
+
+/* 일부 제목은 명조로. 고딕 볼드 사이에서 결이 달라 보인다 */
+.is-serif .cluster__title {
+  font-family: var(--serif);
+}
+
+/* 제목을 반복해 만든 무늬. 읽으라고 있는 게 아니라 질감이다. */
+.cluster__pattern {
+  /* rem 기준으로 잡아야 한다. em으로 하면 글씨가 작아질 때 폭도 같이 좁아져서
+     무늬가 네모난 덩어리가 아니라 길쭉한 국수 가락이 된다. */
+  width: calc(var(--pattern-width, 8) * 1rem);
+  font-family: var(--sans);
+  font-size: calc(var(--pattern-size, 0.5) * 1rem);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  word-break: break-all;
+  /* 무늬가 제목보다 튀면 안 되니 살짝 물러나게 */
+  color: #444;
+  user-select: none;
+}
+
+/* 일부 덩어리는 세로로 세워서 레퍼런스의 세로 기둥 느낌을 낸다 */
+.is-vertical .cluster__pattern {
+  writing-mode: vertical-rl;
+  width: auto;
+  max-height: 16em;
+}
+
+.cluster:hover,
+.cluster:focus-visible {
+  color: var(--star);
+}
+
+.cluster:hover .cluster__pattern,
+.cluster:focus-visible .cluster__pattern {
+  color: var(--star);
+}
+
+/* ===== 창 (글쓰기 / 읽기) ===== */
+
+.sheet {
+  width: min(34rem, 92vw);
+  /* dialog는 원래 margin:auto로 화면 가운데에 서는데,
+     맨 위의 * { margin: 0 } 이 그걸 지워버려서 다시 넣어준다 */
+  margin: auto;
+  max-height: 86vh;
+  padding: 2.2rem;
+  overflow-y: auto;
+  border: none;
+  border-radius: 12px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--serif);
+  box-shadow: 0 2vmin 6vmin rgba(60, 50, 80, 0.25);
+}
+
+.sheet::backdrop {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(3px);
+}
+
+.sheet__title {
+  margin-bottom: 1.4rem;
+  font-family: var(--sans);
+  font-size: 0.84rem;
+  font-weight: 400;
+  color: var(--ink-dim);
+}
+
+.sheet__buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 1.6rem;
+}
+
+.button {
+  padding: 0.55rem 1.2rem;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--sans);
+  font-size: 0.63rem;
+  cursor: pointer;
+}
+
+.button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.button--quiet {
+  background: none;
+  border-color: transparent;
+  color: var(--ink-dim);
+}
+
+.button--quiet:hover {
+  color: var(--ink);
+}
+
+.write-form__label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-family: var(--sans);
+  font-size: 0.6rem;
+  color: var(--ink-dim);
+}
+
+.write-form__title,
+.write-form__body,
+.write-form__nickname {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 2px;
+  background: none;
+  color: var(--ink);
+  font-size: 0.7rem;
+  line-height: 1.8;
+  resize: vertical;
+}
+
+/* 글 쓰는 칸은 명조. 쓰는 동안의 느낌이 올라간 뒤와 같아야 해서 */
+.write-form__body {
+  font-family: var(--serif);
+}
+
+/* 닉네임·비밀번호는 글이 아니라 입력값이라 고딕 */
+.write-form__nickname {
+  font-family: var(--sans);
+}
+
+/* 제목은 페이지에 고딕 볼드로 실리니, 쓰는 칸에서도 그렇게 보이게 한다 */
+.write-form__title {
+  font-family: var(--sans);
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+
+/* 입력칸과 그 다음 항목 이름 사이의 숨통.
+   원래는 안내문이 이 자리를 메우고 있었는데, 안내문을 지우면서 서로 달라붙었다. */
+.write-form__title,
+.write-form__nickname {
+  margin-bottom: 1.7rem;
+}
+
+.write-form__title:focus,
+.write-form__body:focus,
+.write-form__nickname:focus {
+  outline: 1px solid var(--star);
+  border-color: var(--star);
+}
+
+.write-form__count {
+  margin: 0.5rem 0 1.4rem;
+  font-family: var(--sans);
+  font-size: 0.56rem;
+  color: var(--ink-dim);
+  text-align: right;
+}
+
+/* 500자를 넘으면 색으로만 알려준다. 막지는 않는다 */
+.write-form__count.is-over {
+  color: var(--star);
+}
+
+/* 이름이 이미 정해졌을 때, 입력칸 대신 나오는 한 줄 */
+.write-form__whoami {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin-bottom: 1.7rem;
+  font-family: var(--sans);
+  font-size: 0.68rem;
+  color: var(--ink);
+}
+
+/* 헤더에 뜨는 지금 로그인한 사람 */
+.me {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-family: var(--sans);
+  font-size: 0.65rem;
+  color: var(--ink-dim);
+}
+
+.me__out {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--ink-dim);
+  font-family: var(--sans);
+  font-size: 0.58rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.me__out:hover {
+  color: var(--star);
+}
+
+/* 로그인 전에 뜨는 버튼. Write 옆에서 튀지 않게 글자만 있는 모양으로 둔다 */
+.me__in {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--ink-dim);
+  font-family: var(--sans);
+  font-size: 0.65rem;
+  cursor: pointer;
+}
+
+.me__in:hover {
+  color: var(--star);
+}
+
+.write-form__error {
+  margin-top: 1rem;
+  font-family: var(--sans);
+  font-size: 0.6rem;
+  color: #b3261e;
+}
+
+.delete-form {
+  margin-top: 1.8rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid #eee;
+}
+
+.delete-form__row {
+  display: flex;
+  align-items: stretch;
+  gap: 0.6rem;
+}
+
+/* 이 칸은 글쓰기 폼의 닉네임 칸과 같은 스타일을 쓰는데,
+   거기 붙어 있는 아래 여백까지 딸려온다. 그 여백이 줄 높이를 늘려서
+   옆의 버튼까지 세로로 길어지므로 여기서만 지운다. */
+.delete-form__row input {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.delete-form__row .button {
+  flex-shrink: 0;
+}
+
+.read__title {
+  margin-bottom: 1.6rem;
+  font-family: var(--sans);
+  font-weight: 800;
+  font-size: 1.7rem;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+/* 여기만 크게 두는 이유: 페이지의 제목은 흩어진 조각이지만,
+   이 창은 글을 읽으라고 여는 곳이기 때문 */
+.read__body {
+  font-family: var(--serif);
+  font-size: 1rem;
+  line-height: 2;
+  white-space: pre-wrap;
+}
+
+.read__nickname {
+  margin-top: 1.8rem;
+  color: var(--ink-dim);
+  font-family: var(--sans);
+  font-size: 0.63rem;
+  text-align: right;
+}
+
+.read__nickname::before {
+  content: '— ';
+}
+
+/* ===== 좁은 화면 (폰) =====
+   폰은 세로로 길어서, vw와 vh 중 작은 값을 고르는 방식이 그대로면
+   가로 기준에 눌려 모든 게 손톱만 해진다. 여기서 다시 키워준다. */
+@media (max-width: 700px) {
+  /* 봉투: 폰에서는 가로폭 기준으로 잡되 과하지 않게 */
+  .envelope {
+    width: min(46vw, 28vh);
+  }
+
+  /* 초대장은 1.9배로 커지므로 봉투보다 더 작게 시작해야 화면을 안 넘긴다 */
+  .transition__card {
+    width: min(40vw, 24vh);
+  }
+
+  /* 초대장이 작아진 만큼 그 위의 로그인 자리도 따라 올라온다 */
+  .transition__auth {
+    top: calc(50% + 6vh);
+  }
+
+  .invite {
+    width: calc(min(40vw, 24vh) * 1.9 * 0.56);
+  }
+
+  /* 단어 목록: 글씨를 줄이고 좌우 흔들림도 줄여 화면 안에 들어오게 */
+  .topic-link {
+    font-size: 1.45rem;
+    letter-spacing: 0.3em;
+    text-indent: 0.3em;
+  }
+
+  .topics {
+    padding: 26vmin 5vmin;
+  }
+
+  /* 단어 페이지: 판이 화면 폭을 넘지 않도록 */
+  .field {
+    max-width: 100%;
+    margin: 22vmin auto 6rem;
+    padding: 0 4vw;
+  }
+
+  /* 참여자 명단은 폰에서 자리를 너무 먹는다. 글이 우선 */
+  .writers {
+    display: none;
+  }
+
+  /* 헤더가 좁아지므로 주제 이름은 숨기고 Back과 Write만 남긴다 */
+  .topic__name {
+    display: none;
+  }
+
+  .sheet {
+    width: 75vw;
+    max-height: 72vh;
+    padding: 1.3rem;
+  }
+
+  .read__body {
+    font-size: 0.85rem;
+    line-height: 1.9;
+  }
+
+  .read__title {
+    font-size: 1.3rem;
+  }
+
+  /* 폰에서 입력칸 글씨가 16px보다 작으면 누르는 순간 화면이 확대된다.
+     그걸 막으려면 16px 이상이어야 한다. */
+  .write-form__title,
+  .write-form__body,
+  .write-form__nickname {
+    font-size: 16px;
+  }
+
+  /* 한 열이 화면의 절반이므로 덩어리도 그 안에 들어와야 옆자리를 침범하지 않는다 */
+  .cluster {
+    max-width: 46vw;
+    overflow: hidden;
+  }
+
+  .cluster__title {
+    max-width: 4.6em;
+  }
+
+  /* 세로쓰기 무늬는 폭 대신 높이로 조절된다.
+     높이가 크면 글자가 옆으로 계속 쌓여 폭이 벌어지고 화면 밖으로 나간다. */
+  .is-vertical .cluster__pattern {
+    max-height: 9em;
+    max-width: 22vw;
+  }
+}
+
+/* 애니메이션을 줄이도록 설정한 사용자에게는 움직임을 뺀다 */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+  }
+}

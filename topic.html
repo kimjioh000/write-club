@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>500자 글쓰기 모임</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Nanum+Myeongjo:wght@400;800&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css?v=143923">
+</head>
+<body class="topic-page">
+
+  <header class="topic__header">
+    <a class="home-link" href="topics.html">← Back</a>
+    <h1 class="topic__name" id="topicName"></h1>
+    <!-- 로그인했으면 내 이름이, 안 했으면 Sign in이 보인다 -->
+    <span class="me" id="me" hidden>
+      <span id="meName"></span>
+      <button class="me__out" type="button" id="logoutButton">out</button>
+    </span>
+    <button class="me__in" id="signInButton" type="button" hidden>Sign in</button>
+    <button class="write-button" id="writeButton" type="button">Write</button>
+  </header>
+
+  <!-- 이 단어에 글을 올린 사람들. 먼저 올린 순서대로 쌓인다 -->
+  <ul class="writers" id="writers"></ul>
+
+  <main>
+    <!-- 제목 덩어리들이 흩어지는 자리. js/topic.js가 채운다 -->
+    <div class="field" id="field"></div>
+    <p class="field__message" id="fieldMessage">Loading…</p>
+  </main>
+
+  <!-- 글 쓰는 창 -->
+  <dialog class="sheet" id="writeDialog">
+    <form class="write-form" id="writeForm">
+      <h2 class="sheet__title">Write</h2>
+
+      <label class="write-form__label" for="titleInput">Title</label>
+      <input class="write-form__title" id="titleInput" type="text" required maxlength="20">
+
+      <label class="write-form__label" for="bodyInput">Text</label>
+      <textarea class="write-form__body" id="bodyInput" rows="10" required></textarea>
+      <p class="write-form__count"><span id="charCount">0</span> / 500</p>
+
+      <!-- 로그인한 사람 이름으로 올라간다. 닉네임도 비밀번호도 묻지 않는다. -->
+      <p class="write-form__whoami" id="whoAmI">
+        <span id="whoAmIName"></span>
+      </p>
+
+      <p class="write-form__error" id="writeError" hidden></p>
+
+      <div class="sheet__buttons">
+        <button class="button button--quiet" type="button" id="writeCancel">Cancel</button>
+        <button class="button" type="submit" id="writeSubmit">Post</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- 글 읽는 창 -->
+  <dialog class="sheet" id="readDialog">
+    <article>
+      <h2 class="read__title" id="readTitle"></h2>
+      <p class="read__body" id="readBody"></p>
+      <p class="read__nickname" id="readNickname"></p>
+    </article>
+
+    <p class="write-form__error" id="deleteError" hidden></p>
+
+    <div class="sheet__buttons">
+      <!-- 내 글일 때만 보인다 -->
+      <button class="button button--quiet" type="button" id="deleteStart" hidden>Delete</button>
+      <button class="button button--quiet" type="button" id="readClose">Close</button>
+    </div>
+  </dialog>
+
+  <!-- 로그인 창 -->
+  <dialog class="sheet" id="authDialog">
+    <form class="write-form" id="authForm">
+      <h2 class="sheet__title" id="authTitle">Sign in</h2>
+
+      <label class="write-form__label" for="authName">Name</label>
+      <input class="write-form__nickname" id="authName" type="text" required maxlength="30"
+             autocomplete="username">
+
+      <label class="write-form__label" for="authPassword">Password</label>
+      <input class="write-form__nickname" id="authPassword" type="password" required
+             minlength="6" maxlength="72" autocomplete="current-password">
+
+      <p class="write-form__error" id="authError" hidden></p>
+
+      <div class="sheet__buttons">
+        <button class="button button--quiet" type="button" id="authToggle">Sign up</button>
+        <button class="button button--quiet" type="button" id="authCancel">Cancel</button>
+        <button class="button" type="submit" id="authSubmit">Sign in</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- 순서 주의: 라이브러리 → 접속 설정 → 페이지 코드 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js?v=143923"></script>
+  <script src="js/auth.js?v=143923"></script>
+  <script src="js/topic.js?v=143923"></script>
+</body>
+</html>
