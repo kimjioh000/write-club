@@ -281,11 +281,9 @@ body {
 /* 초대장 종이 위에 앉는 로그인 자리.
    카드는 scale로 커지지만 이 버튼은 그대로여야 글씨 크기가 안 변한다.
    그래서 카드에 붙이지 않고, 커진 카드의 높이만큼을 계산해 따로 앉힌다. */
-/* 종이가 이미지 캔버스 안에서 살짝 오른쪽에 그려져 있어서,
-   화면 정중앙에 두면 종이 기준으로는 오른쪽으로 밀려 보인다. 그만큼 당겨준다. */
 .transition__auth {
   position: absolute;
-  left: 47.5%;
+  left: 50%;
   top: calc(50% + 9vh);
   transform: translateX(-50%);
   opacity: 0;
@@ -640,6 +638,42 @@ body {
   color: var(--ink);
 }
 
+/* 되돌릴 수 없는 삭제라 빨간 버튼으로 한 번 더 주의를 준다 */
+.button--danger {
+  background: #b3261e;
+  border-color: #b3261e;
+  color: #fff;
+}
+
+/* 삭제 확인 줄. Delete를 누르면 나타난다 */
+.delete-confirm {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 1.4rem;
+}
+
+.delete-confirm__ask {
+  margin-right: auto;
+  font-family: var(--sans);
+  font-size: 0.62rem;
+  color: var(--ink-dim);
+}
+
+/* 같은 사람의 글이 이 페이지에 여럿일 때, 닉네임이 눌러서 넘어갈 수 있다는 표시 */
+.read__nickname.is-linked {
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 200ms ease;
+}
+
+.read__nickname.is-linked:hover {
+  color: var(--star);
+}
+
 .write-form__label {
   display: block;
   margin-bottom: 0.5rem;
@@ -832,9 +866,12 @@ body {
     width: min(40vw, 24vh);
   }
 
-  /* 초대장이 작아진 만큼 그 위의 로그인 자리도 따라 올라온다 */
+  /* 초대장이 작아진 만큼 그 위의 로그인 자리도 따라 올라온다.
+     폰에서는 종이가 캔버스 안에서 살짝 오른쪽에 있어 왼쪽으로 조금 당긴다.
+     (데스크탑은 종이 위치가 달라 이 보정을 하면 오히려 왼쪽으로 삐져나간다) */
   .transition__auth {
     top: calc(50% + 5vh);
+    left: 47.5%;
   }
 
   /* 종이는 카드 폭의 75%뿐이다(캔버스 좌우에 투명한 여백이 있다).

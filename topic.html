@@ -68,7 +68,14 @@
 
     <p class="write-form__error" id="deleteError" hidden></p>
 
-    <div class="sheet__buttons">
+    <!-- Delete를 누르면 이 확인 줄이 나온다 -->
+    <p class="delete-confirm" id="deleteConfirm" hidden>
+      <span class="delete-confirm__ask">Delete this? This can't be undone.</span>
+      <button class="button button--danger" type="button" id="deleteYes">Yes, delete</button>
+      <button class="button button--quiet" type="button" id="deleteNo">Cancel</button>
+    </p>
+
+    <div class="sheet__buttons" id="readButtons">
       <!-- 내 글일 때만 보인다 -->
       <button class="button button--quiet" type="button" id="deleteStart" hidden>Delete</button>
       <button class="button button--quiet" type="button" id="readClose">Close</button>

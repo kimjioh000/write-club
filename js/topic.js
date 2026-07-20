@@ -162,6 +162,7 @@ function 겹침밀어내기() {
 
 function render(posts) {
   field.innerHTML = '';
+  이페이지글들 = posts;
 
   if (posts.length === 0) {
     fieldMessage.hidden = false;
@@ -186,6 +187,8 @@ function render(posts) {
     const cluster = document.createElement('button');
     cluster.type = 'button';
     cluster.className = `cluster ${LAYOUTS[seed % LAYOUTS.length]}`;
+    // 닉네임 클릭으로 이 글 덩어리를 찾아갈 수 있게 표식을 남긴다
+    cluster.dataset.id = post.id;
     // 세로쓰기와 명조는 뽑지 않고 돌려쓴다.
     // 무작위로 뽑으면 어떤 페이지는 명조가 하나도 안 나오고 어떤 페이지는 몰린다.
     // 나머지를 쓰면 세 글 중 하나는 반드시 명조가 된다.
@@ -242,12 +245,38 @@ function renderWriters(posts) {
   });
 }
 
+// 지금 이 페이지에 그려진 글들. 닉네임을 눌러 같은 사람의 다음 글로 넘어갈 때 쓴다.
+let 이페이지글들 = [];
+
+// 전문 창에서 닉네임을 누르면, 같은 사람이 이 페이지에 쓴 (다음) 글로 슉 넘어간다.
+readNickname.addEventListener('click', () => {
+  if (!openPost) return;
+  const 같은사람 = 이페이지글들.filter((p) => p.nickname === openPost.nickname);
+  if (같은사람.length < 2) return; // 글이 하나뿐이면 옮겨갈 데가 없다
+
+  // 지금 글 다음 차례로. 마지막이면 처음으로 돌아온다(순환)
+  const 지금 = 같은사람.findIndex((p) => p.id === openPost.id);
+  const 다음 = 같은사람[(지금 + 1) % 같은사람.length];
+
+  // 배경에서 그 글 덩어리를 화면 가운데로 스크롤한 뒤 전문 창을 연다
+  const el = field.querySelector(`.cluster[data-id="${다음.id}"]`);
+  readDialog.close();
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  setTimeout(() => open(다음), 420);
+});
+
 function open(post) {
   openPost = post;
   readTitle.textContent = post.title;
   readBody.textContent = post.body;
   readNickname.textContent = post.nickname;
+  // 같은 사람 글이 이 페이지에 둘 이상이면 닉네임이 눌러서 넘어갈 수 있다는 표시를 준다
+  const 여러편 = 이페이지글들.filter((p) => p.nickname === post.nickname).length > 1;
+  readNickname.classList.toggle('is-linked', 여러편);
   deleteError.hidden = true;
+  // 창을 다시 열 때 지난번 삭제 확인 줄이 남아있지 않게 되돌린다
+  document.getElementById('deleteConfirm').hidden = true;
+  document.getElementById('readButtons').hidden = false;
   // 내가 쓴 글일 때만 지우기 버튼이 나온다.
   // 버튼을 숨기는 건 눈에 보이는 정리일 뿐이고, 실제로 못 지우게 막는 건 서버다.
   deleteStart.hidden = !(나 && post.user_id === 나.id);
@@ -387,18 +416,35 @@ document.getElementById('readClose').addEventListener('click', () => readDialog.
 
 // ===== 글 지우기 =====
 
-deleteStart.addEventListener('click', async () => {
+const deleteConfirm = document.getElementById('deleteConfirm');
+const readButtons = document.getElementById('readButtons');
+
+// Delete를 누르면 바로 지우지 않고 확인 줄을 먼저 보여준다
+deleteStart.addEventListener('click', () => {
+  deleteError.hidden = true;
+  readButtons.hidden = true;
+  deleteConfirm.hidden = false;
+});
+
+// Cancel을 누르면 원래 버튼으로 돌아간다
+document.getElementById('deleteNo').addEventListener('click', () => {
+  deleteConfirm.hidden = true;
+  readButtons.hidden = false;
+});
+
+const deleteYes = document.getElementById('deleteYes');
+deleteYes.addEventListener('click', async () => {
   if (!openPost || !나) return;
 
-  deleteStart.disabled = true;
-  deleteStart.textContent = 'Deleting…';
+  deleteYes.disabled = true;
+  deleteYes.textContent = 'Deleting…';
   deleteError.hidden = true;
 
   // 남의 글을 지우려 해도 서버가 막는다. 비밀번호를 물어볼 필요가 없어졌다.
   const { error } = await db.from('posts').delete().eq('id', openPost.id);
 
-  deleteStart.disabled = false;
-  deleteStart.textContent = 'Delete';
+  deleteYes.disabled = false;
+  deleteYes.textContent = 'Yes, delete';
 
   if (error) {
     console.error('[topic] 글 지우기 실패:', error);
