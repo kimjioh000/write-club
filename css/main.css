@@ -478,6 +478,24 @@ body {
   display: inline-block;
   /* 세로로 흐르는 중이라, 아래 여백이 이름과 이름 사이의 간격이 된다 */
   margin-bottom: 1.5rem;
+  /* 컨테이너는 클릭을 막아 뒤 글을 가리지 않지만, 이름만은 눌리게 되살린다 */
+  pointer-events: auto;
+  /* 버튼 기본 모양을 지우고 명단 글씨와 똑같이 보이게 한다 */
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  writing-mode: inherit;
+  cursor: pointer;
+  transition: color 200ms ease;
+}
+
+.writers__name:hover,
+.writers__name:focus-visible {
+  color: var(--star);
+  outline: none;
 }
 
 /* 문장들이 놓이는 판. 높이는 글 수에 따라 js/topic.js가 정한다 */

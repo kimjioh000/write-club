@@ -239,14 +239,40 @@ function renderWriters(posts) {
     본이름.add(post.nickname);
 
     const item = document.createElement('li');
-    item.className = 'writers__name';
-    item.textContent = post.nickname;
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'writers__name';
+    button.textContent = post.nickname;
+    // 이름을 누르면 그 사람이 이 페이지에 쓴 글을 연다.
+    // 여러 편이면 누를 때마다 다음 글로 넘어간다.
+    button.addEventListener('click', () => 사람글열기(post.nickname));
+    item.appendChild(button);
     writersEl.appendChild(item);
   });
 }
 
 // 지금 이 페이지에 그려진 글들. 닉네임을 눌러 같은 사람의 다음 글로 넘어갈 때 쓴다.
 let 이페이지글들 = [];
+
+// 왼쪽 명단에서 이름을 누르면, 그 사람이 이 페이지에 쓴 글을 팝업으로 연다.
+// 여러 편이면 누를 때마다 다음 글로 순환한다.
+function 사람글열기(nickname) {
+  const 그사람글 = 이페이지글들.filter((p) => p.nickname === nickname);
+  if (그사람글.length === 0) return;
+
+  // 이미 그 사람 글을 보고 있으면 다음 글로, 아니면 첫 글로
+  let 다음 = 그사람글[0];
+  if (openPost && openPost.nickname === nickname && readDialog.open) {
+    const 지금 = 그사람글.findIndex((p) => p.id === openPost.id);
+    다음 = 그사람글[(지금 + 1) % 그사람글.length];
+  }
+
+  // 배경에서 그 글 덩어리를 화면 가운데로 슝 스크롤한 뒤 팝업을 연다
+  const el = field.querySelector(`.cluster[data-id="${다음.id}"]`);
+  readDialog.close();
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  setTimeout(() => open(다음), 420);
+}
 
 // 전문 창에서 닉네임을 누르면, 같은 사람이 이 페이지에 쓴 (다음) 글로 슉 넘어간다.
 readNickname.addEventListener('click', () => {
