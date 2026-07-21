@@ -322,6 +322,9 @@ function open(post) {
   댓글불러오기(post.id);
 
   readDialog.showModal();
+  // 팝업은 항상 글의 맨 위(제목)부터 보이게 한다
+  readDialog.scrollTop = 0;
+  readTitle.focus({ preventScroll: true });
 }
 
 // ===== 댓글 =====

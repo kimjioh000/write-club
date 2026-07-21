@@ -1092,7 +1092,8 @@ body {
      그걸 막으려면 16px 이상이어야 한다. */
   .write-form__title,
   .write-form__body,
-  .write-form__nickname {
+  .write-form__nickname,
+  .comments__input {
     font-size: 16px;
   }
 

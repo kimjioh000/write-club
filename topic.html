@@ -61,7 +61,10 @@
   <!-- 글 읽는 창 -->
   <dialog class="sheet" id="readDialog">
     <article>
-      <h2 class="read__title" id="readTitle"></h2>
+      <!-- 팝업이 열릴 때 포커스가 여기(맨 위)에 머물게 한다.
+           안 그러면 <dialog>가 첫 입력칸(맨 아래 댓글칸)으로 포커스를 옮겨
+           폰에서 그 자리로 확대·스크롤된다. -->
+      <h2 class="read__title" id="readTitle" tabindex="-1" autofocus></h2>
       <p class="read__body" id="readBody"></p>
       <p class="read__nickname" id="readNickname"></p>
     </article>
