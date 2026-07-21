@@ -68,10 +68,12 @@ function showMessage(text) {
 }
 
 async function load() {
-  // id 순서대로 받아온다. 나중에 추가한 주제일수록 아래에 붙는다.
+  // 관리자 대시보드에서 정한 순서(sort)를 따른다. 같으면 id 순.
   const { data, error } = await db
     .from('topics')
     .select('id, name')
+    .is('deleted_at', null)
+    .order('sort', { nullsFirst: false })
     .order('id');
 
   if (error) {

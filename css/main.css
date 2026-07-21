@@ -1132,3 +1132,284 @@ body {
     animation-delay: 0ms !important;
   }
 }
+
+/* ===== 관리자 대시보드 ===== */
+
+.admin-page {
+  color: var(--ink);
+}
+
+.admin__header {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 3vmin 4vmin;
+  border-bottom: 1px solid #eee;
+}
+
+.admin__title {
+  flex: 1;
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+.admin__gate {
+  padding: 20vh 4vmin;
+  text-align: center;
+  color: var(--ink-dim);
+  font-family: var(--sans);
+  font-size: 0.85rem;
+}
+
+.admin {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 3vmin 4vmin 12vh;
+  font-family: var(--sans);
+}
+
+.admin__section {
+  margin-top: 2.6rem;
+}
+
+.admin__h {
+  font-size: 0.8rem;
+  font-weight: 800;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid #eee;
+}
+
+.admin__hint {
+  font-weight: 400;
+  color: var(--ink-dim);
+  font-size: 0.62rem;
+}
+
+/* 현황 */
+.admin__stats {
+  display: flex;
+  gap: 1.4rem;
+  margin-top: 1.1rem;
+}
+
+.admin__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.admin__stat-n {
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.admin__stat-l {
+  font-size: 0.6rem;
+  color: var(--ink-dim);
+}
+
+.admin__writers {
+  margin-top: 1.6rem;
+}
+
+.admin__writers-title {
+  font-size: 0.62rem;
+  color: var(--ink-dim);
+  margin-bottom: 0.5rem;
+}
+
+.admin__writer {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.28rem 0;
+  font-size: 0.7rem;
+  border-bottom: 1px solid #f4f4f4;
+}
+
+.admin__empty {
+  color: var(--ink-dim);
+  font-size: 0.66rem;
+  padding: 0.4rem 0;
+}
+
+/* 주제 */
+.admin__topics {
+  list-style: none;
+  margin-top: 1rem;
+}
+
+.admin__topic {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0;
+}
+
+.admin__order {
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: none;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.admin__order:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.admin__topic-name {
+  flex: 1;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: none;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 0.8rem;
+}
+
+.admin__topic-name:hover {
+  border-color: #eee;
+}
+
+.admin__topic-name:focus {
+  outline: none;
+  border-color: var(--star);
+}
+
+.admin__topic-count {
+  flex-shrink: 0;
+  font-size: 0.62rem;
+  color: var(--ink-dim);
+}
+
+.admin__add {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.admin__input {
+  flex: 1;
+  padding: 0.55rem 0.6rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: none;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 0.75rem;
+}
+
+.admin__input:focus {
+  outline: none;
+  border-color: var(--star);
+}
+
+.admin__btn {
+  flex-shrink: 0;
+  padding: 0 1.1rem;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  font-family: var(--sans);
+  font-size: 0.68rem;
+  cursor: pointer;
+}
+
+/* 글 관리 */
+.admin__post-group {
+  margin-top: 1.3rem;
+}
+
+.admin__post-topic {
+  font-size: 0.66rem;
+  font-weight: 800;
+  color: var(--ink-dim);
+  margin-bottom: 0.4rem;
+}
+
+.admin__post {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid #f4f4f4;
+  font-size: 0.72rem;
+}
+
+.admin__post-title {
+  flex: 1;
+  font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin__post-who {
+  flex-shrink: 0;
+  color: var(--ink-dim);
+  font-size: 0.64rem;
+}
+
+.admin__post.is-hidden .admin__post-title,
+.admin__post.is-hidden .admin__post-who {
+  color: #ccc;
+  text-decoration: line-through;
+}
+
+.admin__toggle {
+  flex-shrink: 0;
+  padding: 0.28rem 0.7rem;
+  border: 1px solid #ddd;
+  border-radius: 999px;
+  background: none;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 0.6rem;
+  cursor: pointer;
+  transition: border-color 200ms ease, color 200ms ease;
+}
+
+.admin__toggle:hover {
+  border-color: var(--star);
+  color: var(--star);
+}
+
+.admin__toggle:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* 지워진 댓글 */
+.admin__comments {
+  list-style: none;
+  margin-top: 1rem;
+}
+
+.admin__comment {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid #f4f4f4;
+  font-size: 0.7rem;
+}
+
+.admin__comment-who {
+  flex-shrink: 0;
+  color: var(--ink-dim);
+}
+
+.admin__comment-body {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

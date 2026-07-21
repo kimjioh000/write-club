@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Writing Club</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css?v=143923">
+</head>
+<body class="admin-page">
+
+  <header class="admin__header">
+    <a class="home-link" href="topics.html">← Back</a>
+    <h1 class="admin__title">Admin</h1>
+    <span class="me" id="me" hidden>
+      <span id="meName"></span>
+      <button class="me__out" type="button" id="logoutButton">out</button>
+    </span>
+  </header>
+
+  <!-- 관리자가 아닐 때 -->
+  <p class="admin__gate" id="gate" hidden></p>
+
+  <!-- 관리자만 보는 본문 -->
+  <main class="admin" id="adminMain" hidden>
+
+    <!-- 현황 -->
+    <section class="admin__section">
+      <h2 class="admin__h">현황</h2>
+      <div class="admin__stats" id="stats"></div>
+      <div class="admin__writers" id="writerStats"></div>
+    </section>
+
+    <!-- 주제 관리 -->
+    <section class="admin__section">
+      <h2 class="admin__h">주제</h2>
+      <ul class="admin__topics" id="topicList"></ul>
+      <form class="admin__add" id="addTopicForm">
+        <input class="admin__input" id="newTopic" type="text" maxlength="40" placeholder="새 주제 추가" autocomplete="off">
+        <button class="admin__btn" type="submit">추가</button>
+      </form>
+    </section>
+
+    <!-- 글 관리 -->
+    <section class="admin__section">
+      <h2 class="admin__h">글 <span class="admin__hint">(숨기기 / 되살리기)</span></h2>
+      <div class="admin__posts" id="postList"></div>
+    </section>
+
+    <!-- 지워진 댓글 -->
+    <section class="admin__section">
+      <h2 class="admin__h">지워진 댓글 <span class="admin__hint">(되살리기)</span></h2>
+      <ul class="admin__comments" id="deletedComments"></ul>
+    </section>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js?v=143923"></script>
+  <script src="js/auth.js?v=143923"></script>
+  <script src="js/admin.js?v=143923"></script>
+</body>
+</html>
