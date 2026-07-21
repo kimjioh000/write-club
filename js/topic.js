@@ -25,6 +25,7 @@ const deleteStart = document.getElementById('deleteStart');
 const commentList = document.getElementById('commentList');
 const commentForm = document.getElementById('commentForm');
 const commentInput = document.getElementById('commentInput');
+const commentSecret = document.getElementById('commentSecret');
 const commentSignin = document.getElementById('commentSignin');
 
 const meBox = document.getElementById('me');
@@ -333,7 +334,8 @@ function 댓글그리기(comments) {
 
     const who = document.createElement('span');
     who.className = 'comments__who';
-    who.textContent = c.nickname;
+    // 비밀 댓글은 자물쇠를 붙인다. 여기 보이는 사람은 작성자나 글쓴이뿐이다.
+    who.textContent = (c.is_secret ? '🔒 ' : '') + c.nickname;
 
     const text = document.createElement('span');
     text.className = 'comments__text';
@@ -362,7 +364,7 @@ function 댓글그리기(comments) {
 async function 댓글불러오기(postId) {
   const { data, error } = await db
     .from('comments')
-    .select('id, post_id, nickname, body, user_id')
+    .select('id, post_id, nickname, body, user_id, is_secret')
     .eq('post_id', postId)
     .is('deleted_at', null)
     .order('id'); // 먼저 단 댓글부터 위에
@@ -389,6 +391,7 @@ commentForm.addEventListener('submit', async (event) => {
     user_id: 나.id,
     nickname: 사람의닉네임(나),
     body,
+    is_secret: commentSecret.checked,
   });
 
   send.disabled = false;
@@ -399,6 +402,7 @@ commentForm.addEventListener('submit', async (event) => {
   }
 
   commentInput.value = '';
+  commentSecret.checked = false;
   댓글불러오기(openPost.id);
 });
 

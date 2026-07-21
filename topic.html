@@ -73,12 +73,16 @@
       <!-- 로그인한 사람에게만 보인다 -->
       <form class="comments__form" id="commentForm" hidden>
         <input class="comments__input" id="commentInput" type="text" maxlength="1000"
-               placeholder="댓글 남기기" autocomplete="off">
-        <button class="comments__send" type="submit">쓰기</button>
+               placeholder="Leave a comment" autocomplete="off">
+        <label class="comments__secret">
+          <input type="checkbox" id="commentSecret">
+          <span>secret</span>
+        </label>
+        <button class="comments__send" type="submit">Post</button>
       </form>
 
       <!-- 로그인 전에 보인다 -->
-      <p class="comments__signin" id="commentSignin" hidden>로그인하면 댓글을 남길 수 있어요.</p>
+      <p class="comments__signin" id="commentSignin" hidden>Sign in to leave a comment.</p>
     </section>
 
     <p class="write-form__error" id="deleteError" hidden></p>

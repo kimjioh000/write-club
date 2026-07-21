@@ -966,6 +966,25 @@ body {
   cursor: default;
 }
 
+/* 비밀 댓글 체크 */
+.comments__secret {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--ink-dim);
+  font-family: var(--sans);
+  font-size: 0.58rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.comments__secret input {
+  margin: 0;
+  cursor: pointer;
+  accent-color: var(--star);
+}
+
 .comments__signin {
   margin-top: 1rem;
   color: var(--ink-dim);
