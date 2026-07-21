@@ -870,6 +870,109 @@ body {
   content: '— ';
 }
 
+/* ===== 댓글 ===== */
+
+.comments {
+  margin-top: 1.8rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid #eee;
+}
+
+.comments__list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.comments__item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-family: var(--sans);
+  font-size: 0.66rem;
+  line-height: 1.5;
+}
+
+.comments__who {
+  flex-shrink: 0;
+  color: var(--ink-dim);
+}
+
+.comments__text {
+  flex: 1;
+  color: var(--ink);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* 내 댓글에만 붙는 지우기 × */
+.comments__del {
+  flex-shrink: 0;
+  padding: 0 0.2em;
+  border: none;
+  background: none;
+  color: #ccc;
+  font-size: 0.9rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 200ms ease;
+}
+
+.comments__del:hover {
+  color: #b3261e;
+}
+
+.comments__form {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1.1rem;
+}
+
+.comments__input {
+  flex: 1;
+  padding: 0.5rem 0.1rem;
+  border: none;
+  border-bottom: 1px solid #ddd;
+  background: none;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 0.66rem;
+}
+
+.comments__input:focus {
+  outline: none;
+  border-bottom-color: var(--star);
+}
+
+.comments__send {
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 0.66rem;
+  cursor: pointer;
+  transition: color 200ms ease;
+}
+
+.comments__send:hover {
+  color: var(--star);
+}
+
+.comments__send:disabled {
+  color: var(--ink-dim);
+  cursor: default;
+}
+
+.comments__signin {
+  margin-top: 1rem;
+  color: var(--ink-dim);
+  font-family: var(--sans);
+  font-size: 0.6rem;
+}
+
 /* ===== 좁은 화면 (폰) =====
    폰은 세로로 길어서, vw와 vh 중 작은 값을 고르는 방식이 그대로면
    가로 기준에 눌려 모든 게 손톱만 해진다. 여기서 다시 키워준다. */

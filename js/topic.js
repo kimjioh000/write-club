@@ -22,6 +22,11 @@ const readNickname = document.getElementById('readNickname');
 const deleteError = document.getElementById('deleteError');
 const deleteStart = document.getElementById('deleteStart');
 
+const commentList = document.getElementById('commentList');
+const commentForm = document.getElementById('commentForm');
+const commentInput = document.getElementById('commentInput');
+const commentSignin = document.getElementById('commentSignin');
+
 const meBox = document.getElementById('me');
 const meName = document.getElementById('meName');
 const signInButton = document.getElementById('signInButton');
@@ -308,8 +313,94 @@ function open(post) {
   const 내글 = !!(나 && post.user_id === 나.id);
   deleteStart.hidden = !내글;
   document.getElementById('editStart').hidden = !내글;
+
+  // 댓글 영역: 로그인했으면 입력칸, 아니면 안내문
+  commentForm.hidden = !나;
+  commentSignin.hidden = !!나;
+  commentInput.value = '';
+  댓글불러오기(post.id);
+
   readDialog.showModal();
 }
+
+// ===== 댓글 =====
+
+function 댓글그리기(comments) {
+  commentList.innerHTML = '';
+  comments.forEach((c) => {
+    const item = document.createElement('li');
+    item.className = 'comments__item';
+
+    const who = document.createElement('span');
+    who.className = 'comments__who';
+    who.textContent = c.nickname;
+
+    const text = document.createElement('span');
+    text.className = 'comments__text';
+    text.textContent = c.body;
+
+    item.append(who, text);
+
+    // 내 댓글에는 지우기(×) — 소프트 삭제라 되살릴 수 있다
+    if (나 && c.user_id === 나.id) {
+      const del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'comments__del';
+      del.textContent = '×';
+      del.title = '지우기';
+      del.addEventListener('click', async () => {
+        del.disabled = true;
+        await db.from('comments').update({ deleted_at: new Date().toISOString() }).eq('id', c.id);
+        댓글불러오기(c.post_id);
+      });
+      item.appendChild(del);
+    }
+    commentList.appendChild(item);
+  });
+}
+
+async function 댓글불러오기(postId) {
+  const { data, error } = await db
+    .from('comments')
+    .select('id, post_id, nickname, body, user_id')
+    .eq('post_id', postId)
+    .is('deleted_at', null)
+    .order('id'); // 먼저 단 댓글부터 위에
+
+  if (error) {
+    console.error('[topic] 댓글 불러오기 실패:', error);
+    return;
+  }
+  댓글그리기(data);
+}
+
+commentForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  if (!나 || !openPost) return;
+
+  const body = commentInput.value.trim();
+  if (!body) return;
+
+  const send = commentForm.querySelector('.comments__send');
+  send.disabled = true;
+
+  const { error } = await db.from('comments').insert({
+    post_id: openPost.id,
+    user_id: 나.id,
+    nickname: 사람의닉네임(나),
+    body,
+  });
+
+  send.disabled = false;
+
+  if (error) {
+    console.error('[topic] 댓글 달기 실패:', error);
+    return;
+  }
+
+  commentInput.value = '';
+  댓글불러오기(openPost.id);
+});
 
 // ===== 불러오기 =====
 

@@ -66,6 +66,21 @@
       <p class="read__nickname" id="readNickname"></p>
     </article>
 
+    <!-- 댓글 -->
+    <section class="comments">
+      <ul class="comments__list" id="commentList"></ul>
+
+      <!-- 로그인한 사람에게만 보인다 -->
+      <form class="comments__form" id="commentForm" hidden>
+        <input class="comments__input" id="commentInput" type="text" maxlength="1000"
+               placeholder="댓글 남기기" autocomplete="off">
+        <button class="comments__send" type="submit">쓰기</button>
+      </form>
+
+      <!-- 로그인 전에 보인다 -->
+      <p class="comments__signin" id="commentSignin" hidden>로그인하면 댓글을 남길 수 있어요.</p>
+    </section>
+
     <p class="write-form__error" id="deleteError" hidden></p>
 
     <!-- Delete를 누르면 이 확인 줄이 나온다 -->
