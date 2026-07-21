@@ -303,9 +303,11 @@ function open(post) {
   // 창을 다시 열 때 지난번 삭제 확인 줄이 남아있지 않게 되돌린다
   document.getElementById('deleteConfirm').hidden = true;
   document.getElementById('readButtons').hidden = false;
-  // 내가 쓴 글일 때만 지우기 버튼이 나온다.
-  // 버튼을 숨기는 건 눈에 보이는 정리일 뿐이고, 실제로 못 지우게 막는 건 서버다.
-  deleteStart.hidden = !(나 && post.user_id === 나.id);
+  // 내가 쓴 글일 때만 고치기/지우기 버튼이 나온다.
+  // 버튼을 숨기는 건 눈에 보이는 정리일 뿐이고, 실제로 못 건드리게 막는 건 서버다.
+  const 내글 = !!(나 && post.user_id === 나.id);
+  deleteStart.hidden = !내글;
+  document.getElementById('editStart').hidden = !내글;
   readDialog.showModal();
 }
 
@@ -319,7 +321,7 @@ async function load() {
 
   const [topicResult, postsResult] = await Promise.all([
     db.from('topics').select('name').eq('id', topicId).maybeSingle(),
-    db.from('posts').select('id, title, nickname, body, user_id').eq('topic_id', topicId).order('id'),
+    db.from('posts').select('id, title, nickname, body, user_id').eq('topic_id', topicId).is('deleted_at', null).order('id'),
   ]);
 
   if (topicResult.error || postsResult.error) {
@@ -419,14 +421,41 @@ document.getElementById('logoutButton').addEventListener('click', async () => {
   load();
 });
 
-// ===== 글 쓰기 =====
+// ===== 글 쓰기 / 고치기 =====
+
+// 지금 고치는 중인 글. null이면 새 글을 쓰는 것이다.
+let 편집중 = null;
+
+const writeTitle = document.getElementById('writeTitle');
 
 function 글쓰기창열기() {
+  편집중 = null;
+  writeTitle.textContent = 'Write';
+  writeSubmit.textContent = 'Post';
+  writeForm.reset();
+  charCount.textContent = '0';
+  charCount.parentElement.classList.remove('is-over');
   writeError.hidden = true;
   로그인상태그리기();
   writeDialog.showModal();
   titleInput.focus();
 }
+
+// 전문 창에서 Edit을 누르면 그 글 내용을 채운 채로 글쓰기 창을 연다
+document.getElementById('editStart').addEventListener('click', () => {
+  if (!openPost || !나) return;
+  편집중 = openPost;
+  writeTitle.textContent = 'Edit';
+  writeSubmit.textContent = 'Save';
+  titleInput.value = openPost.title;
+  bodyInput.value = openPost.body;
+  bodyInput.dispatchEvent(new Event('input', { bubbles: true })); // 글자수 갱신
+  writeError.hidden = true;
+  로그인상태그리기();
+  readDialog.close();
+  writeDialog.showModal();
+  titleInput.focus();
+});
 
 document.getElementById('writeButton').addEventListener('click', () => {
   // 로그인하지 않았으면 글쓰기 대신 로그인부터
@@ -437,7 +466,10 @@ document.getElementById('writeButton').addEventListener('click', () => {
   글쓰기창열기();
 });
 
-document.getElementById('writeCancel').addEventListener('click', () => writeDialog.close());
+document.getElementById('writeCancel').addEventListener('click', () => {
+  편집중 = null;
+  writeDialog.close();
+});
 document.getElementById('readClose').addEventListener('click', () => readDialog.close());
 
 // ===== 글 지우기 =====
@@ -466,8 +498,13 @@ deleteYes.addEventListener('click', async () => {
   deleteYes.textContent = 'Deleting…';
   deleteError.hidden = true;
 
-  // 남의 글을 지우려 해도 서버가 막는다. 비밀번호를 물어볼 필요가 없어졌다.
-  const { error } = await db.from('posts').delete().eq('id', openPost.id);
+  // 진짜로 지우지 않고 '지워짐' 표시만 남긴다(소프트 삭제).
+  // 화면에서는 사라지지만 데이터는 남아, 실수로 지워도 되살릴 수 있다.
+  // 남의 글을 지우려 해도 서버가 막는다.
+  const { error } = await db
+    .from('posts')
+    .update({ deleted_at: new Date().toISOString() })
+    .eq('id', openPost.id);
 
   deleteYes.disabled = false;
   deleteYes.textContent = 'Yes, delete';
@@ -497,26 +534,39 @@ writeForm.addEventListener('submit', async (event) => {
   const nickname = 사람의닉네임(나);
   if (!title || !body) return;
 
+  const 고치는중 = 편집중 !== null;
+
   // 두 번 눌러서 같은 글이 두 번 올라가는 것을 막는다
   writeSubmit.disabled = true;
-  writeSubmit.textContent = 'Posting…';
+  writeSubmit.textContent = 고치는중 ? 'Saving…' : 'Posting…';
   writeError.hidden = true;
 
-  // user_id를 같이 넣어야 "내 글"로 인정된다.
-  // 남의 id를 적어 보내도 서버가 로그인 증표와 대조해서 거절한다.
-  const { error } = await db
-    .from('posts')
-    .insert({ topic_id: topicId, title, nickname, body, user_id: 나.id });
+  let error;
+  if (고치는중) {
+    // 내 글만 고칠 수 있다. 남의 글 id를 넣어도 서버가 막는다.
+    ({ error } = await db
+      .from('posts')
+      .update({ title, body })
+      .eq('id', 편집중.id));
+  } else {
+    // user_id를 같이 넣어야 "내 글"로 인정된다.
+    // 남의 id를 적어 보내도 서버가 로그인 증표와 대조해서 거절한다.
+    ({ error } = await db
+      .from('posts')
+      .insert({ topic_id: topicId, title, nickname, body, user_id: 나.id }));
+  }
 
   writeSubmit.disabled = false;
-  writeSubmit.textContent = 'Post';
+  writeSubmit.textContent = 고치는중 ? 'Save' : 'Post';
 
   if (error) {
-    console.error('[topic] 글 올리기 실패:', error);
+    console.error('[topic] 글 저장 실패:', error);
     writeError.hidden = false;
-    writeError.textContent = 'Failed to post';
+    writeError.textContent = 고치는중 ? 'Failed to save' : 'Failed to post';
     return;
   }
+
+  편집중 = null;
 
   writeDialog.close();
   writeForm.reset();

@@ -35,7 +35,7 @@
   <!-- 글 쓰는 창 -->
   <dialog class="sheet" id="writeDialog">
     <form class="write-form" id="writeForm">
-      <h2 class="sheet__title">Write</h2>
+      <h2 class="sheet__title" id="writeTitle">Write</h2>
 
       <label class="write-form__label" for="titleInput">Title</label>
       <input class="write-form__title" id="titleInput" type="text" required maxlength="20">
@@ -76,7 +76,8 @@
     </p>
 
     <div class="sheet__buttons" id="readButtons">
-      <!-- 내 글일 때만 보인다 -->
+      <!-- Edit, Delete는 내 글일 때만 보인다 -->
+      <button class="button button--quiet" type="button" id="editStart" hidden>Edit</button>
       <button class="button button--quiet" type="button" id="deleteStart" hidden>Delete</button>
       <button class="button button--quiet" type="button" id="readClose">Close</button>
     </div>
