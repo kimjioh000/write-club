@@ -26,35 +26,37 @@
   <!-- 관리자만 보는 본문 -->
   <main class="admin" id="adminMain" hidden>
 
-    <!-- 현황 -->
-    <section class="admin__section">
-      <h2 class="admin__h">현황</h2>
-      <div class="admin__stats" id="stats"></div>
-      <div class="admin__writers" id="writerStats"></div>
-    </section>
+    <!-- 맨 위: 한눈에 보는 숫자 -->
+    <div class="admin__kpis" id="stats"></div>
 
-    <!-- 주제 관리 -->
-    <section class="admin__section">
-      <h2 class="admin__h">주제</h2>
-      <ul class="admin__topics" id="topicList"></ul>
-      <form class="admin__add" id="addTopicForm">
-        <input class="admin__input" id="newTopic" type="text" maxlength="40" placeholder="새 주제 추가" autocomplete="off">
-        <button class="admin__btn" type="submit">추가</button>
-      </form>
-    </section>
+    <!-- 카드 그리드 -->
+    <div class="admin__grid">
 
-    <!-- 글 관리 -->
-    <section class="admin__section">
-      <h2 class="admin__h">글 <span class="admin__hint">(숨기기 / 되살리기)</span></h2>
-      <div class="admin__posts" id="postList"></div>
-    </section>
+      <section class="admin__card">
+        <h2 class="admin__h">주제</h2>
+        <ul class="admin__topics" id="topicList"></ul>
+        <form class="admin__add" id="addTopicForm">
+          <input class="admin__input" id="newTopic" type="text" maxlength="40" placeholder="새 주제 추가" autocomplete="off">
+          <button class="admin__btn" type="submit">추가</button>
+        </form>
+      </section>
 
-    <!-- 지워진 댓글 -->
-    <section class="admin__section">
-      <h2 class="admin__h">지워진 댓글 <span class="admin__hint">(되살리기)</span></h2>
-      <ul class="admin__comments" id="deletedComments"></ul>
-    </section>
+      <section class="admin__card">
+        <h2 class="admin__h">참여자별 글 수</h2>
+        <div class="admin__writers" id="writerStats"></div>
+      </section>
 
+      <section class="admin__card">
+        <h2 class="admin__h">글 <span class="admin__hint">(숨기기 / 되살리기)</span></h2>
+        <div class="admin__posts" id="postList"></div>
+      </section>
+
+      <section class="admin__card">
+        <h2 class="admin__h">지워진 댓글 <span class="admin__hint">(되살리기)</span></h2>
+        <ul class="admin__comments" id="deletedComments"></ul>
+      </section>
+
+    </div>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

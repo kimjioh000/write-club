@@ -78,7 +78,7 @@ async function 현황그리기() {
 
   // 참여자별 글 수 (많이 쓴 순)
   const 정렬 = [...참여자.entries()].sort((a, b) => b[1] - a[1]);
-  writerStatsEl.innerHTML = '<div class="admin__writers-title">참여자별 글 수</div>';
+  writerStatsEl.innerHTML = '';
   정렬.forEach(([name, n]) => {
     const row = document.createElement('div');
     row.className = 'admin__writer';
