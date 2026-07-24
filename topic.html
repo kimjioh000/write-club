@@ -33,29 +33,39 @@
   </main>
 
   <!-- 글 쓰는 창 -->
-  <dialog class="sheet" id="writeDialog">
-    <form class="write-form" id="writeForm">
-      <h2 class="sheet__title" id="writeTitle">Write</h2>
+  <dialog class="sheet sheet--write" id="writeDialog">
+    <div class="editor">
+      <!-- 우상단 글자 수 -->
+      <div class="editor__count"><span id="charCount">0</span> chars</div>
 
-      <label class="write-form__label" for="titleInput">Title</label>
-      <input class="write-form__title" id="titleInput" type="text" required maxlength="20">
+      <!-- 제목 (레퍼런스에서 주제 자리) -->
+      <input class="editor__title" id="titleInput" type="text" maxlength="20" placeholder="Title" autocomplete="off">
 
-      <label class="write-form__label" for="bodyInput">Text</label>
-      <textarea class="write-form__body" id="bodyInput" rows="10" required></textarea>
-      <p class="write-form__count"><span id="charCount">0</span> / 500</p>
-
-      <!-- 로그인한 사람 이름으로 올라간다. 닉네임도 비밀번호도 묻지 않는다. -->
-      <p class="write-form__whoami" id="whoAmI">
-        <span id="whoAmIName"></span>
-      </p>
+      <!-- 본문: 서식 있는 글 -->
+      <div class="editor__body" id="bodyInput" contenteditable="true"
+           data-placeholder="Share your thoughts."></div>
 
       <p class="write-form__error" id="writeError" hidden></p>
+    </div>
 
-      <div class="sheet__buttons">
-        <button class="button button--quiet" type="button" id="writeCancel">Cancel</button>
-        <button class="button" type="submit" id="writeSubmit">Post</button>
+    <!-- 하단 툴바 (키보드 위에 붙는다) -->
+    <div class="toolbar" id="writeToolbar">
+      <button class="toolbar__side" type="button" id="writeCancel">✕ Close</button>
+
+      <div class="toolbar__tools">
+        <button class="toolbar__tool" type="button" data-cmd="justifyLeft" title="Align left">⇤</button>
+        <button class="toolbar__tool" type="button" data-cmd="justifyCenter" title="Align center">≡</button>
+        <button class="toolbar__tool" type="button" data-cmd="justifyRight" title="Align right">⇥</button>
+        <span class="toolbar__sep"></span>
+        <button class="toolbar__tool" type="button" data-cmd="bold" title="Bold"><b>B</b></button>
+        <button class="toolbar__tool" type="button" data-cmd="italic" title="Italic"><i>I</i></button>
+        <button class="toolbar__tool" type="button" data-cmd="underline" title="Underline"><u>U</u></button>
+        <span class="toolbar__sep"></span>
+        <button class="toolbar__tool" type="button" id="copyBody" title="Copy text">⧉</button>
       </div>
-    </form>
+
+      <button class="toolbar__side toolbar__side--done" type="button" id="writeSubmit">✓ Done</button>
+    </div>
   </dialog>
 
   <!-- 글 읽는 창 -->

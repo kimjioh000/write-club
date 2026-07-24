@@ -7,13 +7,12 @@ const topicNameEl = document.getElementById('topicName');
 const writersEl = document.getElementById('writers');
 
 const writeDialog = document.getElementById('writeDialog');
-const writeForm = document.getElementById('writeForm');
-const bodyInput = document.getElementById('bodyInput');
+const bodyInput = document.getElementById('bodyInput');   // 서식 있는 본문(contenteditable)
 const titleInput = document.getElementById('titleInput');
-const whoAmIName = document.getElementById('whoAmIName');
 const charCount = document.getElementById('charCount');
 const writeError = document.getElementById('writeError');
 const writeSubmit = document.getElementById('writeSubmit');
+const writeToolbar = document.getElementById('writeToolbar');
 
 const readDialog = document.getElementById('readDialog');
 const readTitle = document.getElementById('readTitle');
@@ -43,6 +42,46 @@ const authToggle = document.getElementById('authToggle');
 
 // 지금 열려 있는 글. 삭제할 때 어느 글인지 알아야 해서 들고 있는다.
 let openPost = null;
+
+// ===== 서식 있는 글(리치 텍스트) =====
+// 본문은 이제 순수 글자가 아니라 볼드·기울임·밑줄·정렬이 들어간 글이다.
+// HTML로 저장하되, 화면에 넣을 때는 안전한 태그만 남겨 걸러낸다.
+// (남이 콘솔로 심어둔 <script> 같은 게 실행되지 않도록)
+
+const 허용태그 = new Set(['B', 'STRONG', 'I', 'EM', 'U', 'BR', 'DIV', 'P', 'SPAN']);
+
+function 안전한HTML(더러운) {
+  const 그릇 = document.createElement('div');
+  그릇.innerHTML = 더러운;
+
+  (function 훑기(node) {
+    [...node.childNodes].forEach((child) => {
+      if (child.nodeType === 1) { // 요소
+        if (!허용태그.has(child.tagName)) {
+          // 허용 안 된 태그는 벗겨내되 안의 글자는 살린다
+          child.replaceWith(...child.childNodes);
+          return;
+        }
+        // 정렬만 남기고 나머지 속성은 전부 제거
+        const align = child.style && child.style.textAlign;
+        [...child.attributes].forEach((a) => child.removeAttribute(a.name));
+        if (align) child.style.textAlign = align;
+        훑기(child);
+      } else if (child.nodeType !== 3) {
+        child.remove(); // 글자 노드 아니면 버린다(주석 등)
+      }
+    });
+  })(그릇);
+
+  return 그릇.innerHTML;
+}
+
+// 서식을 걷어낸 순수 글자. 글자 수 세기와 단어페이지 무늬에 쓴다.
+function 글자만(html) {
+  const 그릇 = document.createElement('div');
+  그릇.innerHTML = html;
+  return 그릇.textContent || '';
+}
 
 // 주소 끝의 ?id=3 에서 3을 꺼낸다
 const topicId = Number(new URLSearchParams(location.search).get('id'));
@@ -210,7 +249,8 @@ function render(posts) {
     pattern.className = 'cluster__pattern';
     // 본문 앞부분을 잘라 무늬로 쓴다. 띄어쓰기와 줄바꿈을 빼야
     // 레퍼런스처럼 빈틈없는 덩어리가 된다. 읽으라고 있는 게 아니라 질감이다.
-    pattern.textContent = post.body.replace(/\s+/g, '').slice(0, PATTERN_LENGTH);
+    // 본문에 서식 태그가 들어 있으니 글자만 뽑은 뒤 공백을 없앤다
+    pattern.textContent = 글자만(post.body).replace(/\s+/g, '').slice(0, PATTERN_LENGTH);
     pattern.setAttribute('aria-hidden', 'true');
 
     cluster.append(title, pattern);
@@ -300,7 +340,8 @@ readNickname.addEventListener('click', () => {
 function open(post) {
   openPost = post;
   readTitle.textContent = post.title;
-  readBody.textContent = post.body;
+  // 본문은 서식(볼드·기울임·밑줄·정렬)을 살려서 보여준다. 안전한 태그만 남긴다.
+  readBody.innerHTML = 안전한HTML(post.body);
   readNickname.textContent = post.nickname;
   // 같은 사람 글이 이 페이지에 둘 이상이면 닉네임이 눌러서 넘어갈 수 있다는 표시를 준다
   const 여러편 = 이페이지글들.filter((p) => p.nickname === post.nickname).length > 1;
@@ -441,11 +482,40 @@ async function load() {
 
 // ===== 글 올리기 =====
 
-bodyInput.addEventListener('input', () => {
-  const count = bodyInput.value.trim().length;
+// 글자 수는 서식을 뺀 순수 글자로 센다
+function 글자수갱신() {
+  const count = 글자만(bodyInput.innerHTML).trim().length;
   charCount.textContent = count;
-  // 500자를 넘겨도 막지는 않는다. 넘었다는 것만 눈에 보이게 한다.
   charCount.parentElement.classList.toggle('is-over', count > 500);
+  // 비어 있으면 placeholder가 보이도록 표시
+  bodyInput.classList.toggle('is-empty', count === 0);
+}
+bodyInput.addEventListener('input', 글자수갱신);
+
+// 툴바: 볼드·기울임·밑줄·정렬. execCommand는 낡았지만 이 용도엔 가장 단순하고 잘 된다.
+writeToolbar.querySelectorAll('[data-cmd]').forEach((btn) => {
+  // mousedown에서 막아야 본문 선택이 풀리지 않는다
+  btn.addEventListener('mousedown', (e) => e.preventDefault());
+  btn.addEventListener('click', () => {
+    bodyInput.focus();
+    document.execCommand(btn.dataset.cmd, false, null);
+    글자수갱신();
+  });
+});
+
+// 본문 복사
+document.getElementById('copyBody').addEventListener('mousedown', (e) => e.preventDefault());
+document.getElementById('copyBody').addEventListener('click', async () => {
+  const 글 = 글자만(bodyInput.innerHTML);
+  try {
+    await navigator.clipboard.writeText(글);
+    const c = document.getElementById('copyBody');
+    const 원래 = c.textContent;
+    c.textContent = '✓';
+    setTimeout(() => { c.textContent = 원래; }, 1000);
+  } catch (e) {
+    console.warn('[topic] 복사 실패:', e);
+  }
 });
 
 // ===== 로그인 =====
@@ -458,7 +528,6 @@ function 로그인상태그리기() {
   // 로그인 전에는 그 자리에 Sign in이 대신 선다
   signInButton.hidden = !!나;
   meName.textContent = 이름;
-  whoAmIName.textContent = 이름;
 }
 
 signInButton.addEventListener('click', 로그인창열기);
@@ -524,32 +593,24 @@ document.getElementById('logoutButton').addEventListener('click', async () => {
 // 지금 고치는 중인 글. null이면 새 글을 쓰는 것이다.
 let 편집중 = null;
 
-const writeTitle = document.getElementById('writeTitle');
-
 function 글쓰기창열기() {
   편집중 = null;
-  writeTitle.textContent = 'Write';
-  writeSubmit.textContent = 'Post';
-  writeForm.reset();
-  charCount.textContent = '0';
-  charCount.parentElement.classList.remove('is-over');
+  titleInput.value = '';
+  bodyInput.innerHTML = '';
+  글자수갱신();
   writeError.hidden = true;
-  로그인상태그리기();
   writeDialog.showModal();
   titleInput.focus();
 }
 
-// 전문 창에서 Edit을 누르면 그 글 내용을 채운 채로 글쓰기 창을 연다
+// 전문 창에서 Edit을 누르면 그 글 내용(서식 그대로)을 채운 채로 글쓰기 창을 연다
 document.getElementById('editStart').addEventListener('click', () => {
   if (!openPost || !나) return;
   편집중 = openPost;
-  writeTitle.textContent = 'Edit';
-  writeSubmit.textContent = 'Save';
   titleInput.value = openPost.title;
-  bodyInput.value = openPost.body;
-  bodyInput.dispatchEvent(new Event('input', { bubbles: true })); // 글자수 갱신
+  bodyInput.innerHTML = 안전한HTML(openPost.body); // 서식 살려서 불러온다
+  글자수갱신();
   writeError.hidden = true;
-  로그인상태그리기();
   readDialog.close();
   writeDialog.showModal();
   titleInput.focus();
@@ -618,9 +679,8 @@ deleteYes.addEventListener('click', async () => {
   load();
 });
 
-writeForm.addEventListener('submit', async (event) => {
-  event.preventDefault();
-
+// Done(✓)을 누르면 저장한다. 이제 폼 제출이 아니라 버튼 클릭이다.
+writeSubmit.addEventListener('click', async () => {
   if (!나) {
     writeDialog.close();
     로그인창열기();
@@ -628,34 +688,35 @@ writeForm.addEventListener('submit', async (event) => {
   }
 
   const title = titleInput.value.trim();
-  const body = bodyInput.value.trim();
+  const body = 안전한HTML(bodyInput.innerHTML);   // 서식 있는 글, 안전한 태그만
   const nickname = 사람의닉네임(나);
-  if (!title || !body) return;
+  // 서식을 뺀 순수 글자가 있어야 빈 글이 아니다
+  if (!title || !글자만(body).trim()) {
+    writeError.hidden = false;
+    writeError.textContent = 'Please write a title and text.';
+    return;
+  }
 
   const 고치는중 = 편집중 !== null;
 
-  // 두 번 눌러서 같은 글이 두 번 올라가는 것을 막는다
   writeSubmit.disabled = true;
   writeSubmit.textContent = 고치는중 ? 'Saving…' : 'Posting…';
   writeError.hidden = true;
 
   let error;
   if (고치는중) {
-    // 내 글만 고칠 수 있다. 남의 글 id를 넣어도 서버가 막는다.
     ({ error } = await db
       .from('posts')
       .update({ title, body })
       .eq('id', 편집중.id));
   } else {
-    // user_id를 같이 넣어야 "내 글"로 인정된다.
-    // 남의 id를 적어 보내도 서버가 로그인 증표와 대조해서 거절한다.
     ({ error } = await db
       .from('posts')
       .insert({ topic_id: topicId, title, nickname, body, user_id: 나.id }));
   }
 
   writeSubmit.disabled = false;
-  writeSubmit.textContent = 고치는중 ? 'Save' : 'Post';
+  writeSubmit.textContent = '✓ Done';
 
   if (error) {
     console.error('[topic] 글 저장 실패:', error);
@@ -665,14 +726,23 @@ writeForm.addEventListener('submit', async (event) => {
   }
 
   편집중 = null;
-
   writeDialog.close();
-  writeForm.reset();
-  charCount.textContent = '0';
-  charCount.parentElement.classList.remove('is-over');
-  // 방금 올린 글이 바로 보이도록 다시 불러온다
   load();
 });
+
+// 폰에서 글쓰기 창이 열려 있는 동안, 창 높이를 '키보드를 뺀 실제 보이는 높이'에
+// 맞춘다. 그러면 창 맨 아래의 툴바가 키보드 바로 위에 붙는다.
+if (window.visualViewport) {
+  const 창높이맞추기 = () => {
+    if (writeDialog.open) {
+      writeDialog.style.height = window.visualViewport.height + 'px';
+    }
+  };
+  window.visualViewport.addEventListener('resize', 창높이맞추기);
+  window.visualViewport.addEventListener('scroll', 창높이맞추기);
+  // 창을 닫으면 높이 고정을 푼다
+  writeDialog.addEventListener('close', () => { writeDialog.style.height = ''; });
+}
 
 // 페이지를 열면 먼저 로그인 상태부터 확인한다.
 // 로그인은 브라우저에 남아 있으므로 새로고침해도 풀리지 않는다.

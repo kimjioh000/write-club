@@ -630,6 +630,143 @@ body {
   margin-top: 1.6rem;
 }
 
+/* ===== 글쓰기 에디터 (서식 있는 글) ===== */
+
+.sheet--write {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;   /* 에디터가 스크롤하고 툴바는 아래에 붙어 있게 */
+}
+
+.editor {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 1.6rem 2.2rem 1rem;
+}
+
+/* 우상단 글자 수 */
+.editor__count {
+  align-self: flex-end;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: #f0f0f3;
+  color: var(--ink-dim);
+  font-family: var(--sans);
+  font-size: 0.6rem;
+}
+
+.editor__count.is-over {
+  background: var(--star);
+  color: #fff;
+}
+
+/* 제목 (레퍼런스에서 주제 자리) */
+.editor__title {
+  margin: 1.4rem 0 1.8rem;
+  border: none;
+  background: none;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-weight: 800;
+  font-size: 1.15rem;
+  text-align: center;
+}
+
+.editor__title:focus {
+  outline: none;
+}
+
+.editor__title::placeholder {
+  color: #ccc;
+  font-weight: 400;
+}
+
+/* 본문: 서식 있는 글 */
+.editor__body {
+  flex: 1;
+  min-height: 9rem;
+  outline: none;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 1rem;
+  line-height: 2;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* 비어 있을 때 안내 문구 */
+.editor__body.is-empty::before {
+  content: attr(data-placeholder);
+  color: #bbb;
+  pointer-events: none;
+}
+
+/* 하단 툴바 */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  padding: 0.6rem 0.8rem calc(0.6rem + env(safe-area-inset-bottom));
+  border-top: 1px solid #ececf0;
+  background: #f4f4f6;
+}
+
+.toolbar__side {
+  flex-shrink: 0;
+  padding: 0.4rem 0.6rem;
+  border: none;
+  background: none;
+  color: var(--ink-dim);
+  font-family: var(--sans);
+  font-size: 0.68rem;
+  cursor: pointer;
+}
+
+.toolbar__side--done {
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.toolbar__tools {
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+  overflow-x: auto;
+}
+
+.toolbar__tool {
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+
+.toolbar__tool:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.toolbar__sep {
+  flex-shrink: 0;
+  width: 1px;
+  height: 1.1rem;
+  background: #d8d8de;
+  margin: 0 0.25rem;
+}
+
 .button {
   padding: 0.55rem 1.2rem;
   border: 1px solid var(--ink);
@@ -856,6 +993,12 @@ body {
   font-size: 1rem;
   line-height: 2;
   white-space: pre-wrap;
+}
+
+/* 서식 있는 글의 문단·정렬이 자연스럽게 보이도록 */
+.read__body div,
+.read__body p {
+  margin: 0;
 }
 
 .read__nickname {
