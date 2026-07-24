@@ -658,6 +658,12 @@ body {
   overflow: hidden;   /* 에디터가 스크롤하고 툴바는 아래에 붙어 있게 */
 }
 
+/* display:flex가 브라우저 기본값(dialog:not([open]){display:none})을 덮어써서
+   닫혀 있어도 페이지에 렌더링되던 문제. 닫혀 있으면 확실히 숨긴다. */
+.sheet--write:not([open]) {
+  display: none;
+}
+
 /* 나가기 전 임시저장 확인 바 — 툴바 아래 바닥에 붙는다 */
 .draft-confirm {
   flex-shrink: 0;
@@ -1062,8 +1068,36 @@ body {
   flex-shrink: 0;
 }
 
+/* 우상단 맨 위 X 버튼 (글쓰기 창의 글자 수와 같은 자리) */
+.read__top {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.6rem;
+}
+
+.read__close {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--ink-dim);
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 150ms ease;
+}
+
+.read__close:hover {
+  color: var(--ink);
+}
+
+/* 하단 Close 글자를 Post 오른쪽 끝과 맞춘다(.button 오른쪽 여백을 뺀다) */
+#readClose {
+  padding-right: 0;
+}
+
 .read__title {
-  margin-bottom: 1.6rem;
+  margin-bottom: 3.2rem;   /* 제목과 본문 사이 간격 2배 */
   font-family: var(--sans);
   font-weight: 800;
   font-size: 1.7rem;

@@ -703,6 +703,7 @@ document.getElementById('draftSave').addEventListener('click', () => {
 });
 
 document.getElementById('readClose').addEventListener('click', () => readDialog.close());
+document.getElementById('readCloseX').addEventListener('click', () => readDialog.close());
 
 // ===== 글 지우기 =====
 

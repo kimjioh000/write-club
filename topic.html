@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Nanum+Myeongjo:wght@400;800&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/main.css?v=240724c">
+  <link rel="stylesheet" href="css/main.css?v=240724e">
 </head>
 <body class="topic-page">
 
@@ -87,6 +87,10 @@
 
   <!-- 글 읽는 창 -->
   <dialog class="sheet" id="readDialog">
+    <!-- 우상단 맨 위 X 버튼 (하단 Close와 별개로, 이걸 눌러도 닫힌다) -->
+    <div class="read__top">
+      <button class="read__close" type="button" id="readCloseX" aria-label="Close">✕</button>
+    </div>
     <article>
       <!-- 팝업이 열릴 때 포커스가 여기(맨 위)에 머물게 한다.
            안 그러면 <dialog>가 첫 입력칸(맨 아래 댓글칸)으로 포커스를 옮겨
@@ -157,8 +161,8 @@
 
   <!-- 순서 주의: 라이브러리 → 접속 설정 → 페이지 코드 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-config.js?v=240724c"></script>
-  <script src="js/auth.js?v=240724c"></script>
-  <script src="js/topic.js?v=240724c"></script>
+  <script src="js/supabase-config.js?v=240724e"></script>
+  <script src="js/auth.js?v=240724e"></script>
+  <script src="js/topic.js?v=240724e"></script>
 </body>
 </html>
