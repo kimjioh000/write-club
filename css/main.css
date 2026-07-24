@@ -664,15 +664,15 @@ body {
   color: #fff;
 }
 
-/* 제목 (레퍼런스에서 주제 자리) */
+/* 제목 (레퍼런스에서 주제 자리) — 글쓰기 창에서는 명조체 */
 .editor__title {
-  margin: 1.4rem 0 1.8rem;
+  margin: 1.4rem 0 3.6rem;   /* 제목과 본문 사이 간격 2배 */
   border: none;
   background: none;
   color: var(--ink);
-  font-family: var(--sans);
+  font-family: var(--serif);
   font-weight: 800;
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   text-align: center;
 }
 
@@ -1237,6 +1237,26 @@ body {
 
   .read__title {
     font-size: 1.4rem;
+  }
+
+  /* 폰에서는 글자 수를 버튼(알약) 말고 글씨로만, 화면 우상단 구석에 박는다 */
+  .editor__count {
+    position: absolute;
+    top: calc(1rem + env(safe-area-inset-top));
+    right: 1.1rem;
+    padding: 0;
+    background: none;
+    z-index: 1;
+  }
+
+  .editor__count.is-over {
+    background: none;
+    color: var(--star);
+  }
+
+  /* 글자 수가 겹치지 않게 본문 위 여백을 살짝 준다 */
+  .editor {
+    padding-top: 2.4rem;
   }
 
   /* 폰에서 입력칸 글씨가 16px보다 작으면 누르는 순간 화면이 확대된다.
