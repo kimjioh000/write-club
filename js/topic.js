@@ -595,11 +595,13 @@ let 편집중 = null;
 
 function 글쓰기창열기() {
   편집중 = null;
-  titleInput.value = '';
+  titleInput.textContent = '';
+  titleInput.classList.add('is-empty');
   bodyInput.innerHTML = '';
   글자수갱신();
   writeError.hidden = true;
   writeDialog.showModal();
+  글쓰기창높이맞추기();
   titleInput.focus();
 }
 
@@ -607,13 +609,23 @@ function 글쓰기창열기() {
 document.getElementById('editStart').addEventListener('click', () => {
   if (!openPost || !나) return;
   편집중 = openPost;
-  titleInput.value = openPost.title;
+  titleInput.textContent = openPost.title;
+  titleInput.classList.toggle('is-empty', !openPost.title.trim());
   bodyInput.innerHTML = 안전한HTML(openPost.body); // 서식 살려서 불러온다
   글자수갱신();
   writeError.hidden = true;
   readDialog.close();
   writeDialog.showModal();
+  글쓰기창높이맞추기();
   titleInput.focus();
+});
+
+// 제목은 한 줄짜리다. Enter로 줄바꿈되지 않게 막고, 빈 상태 표시를 갱신한다.
+titleInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') e.preventDefault();
+});
+titleInput.addEventListener('input', () => {
+  titleInput.classList.toggle('is-empty', titleInput.textContent.trim() === '');
 });
 
 document.getElementById('writeButton').addEventListener('click', () => {
@@ -687,7 +699,7 @@ writeSubmit.addEventListener('click', async () => {
     return;
   }
 
-  const title = titleInput.value.trim();
+  const title = titleInput.textContent.trim().slice(0, 20);
   const body = 안전한HTML(bodyInput.innerHTML);   // 서식 있는 글, 안전한 태그만
   const nickname = 사람의닉네임(나);
   // 서식을 뺀 순수 글자가 있어야 빈 글이 아니다
@@ -732,14 +744,16 @@ writeSubmit.addEventListener('click', async () => {
 
 // 폰에서 글쓰기 창이 열려 있는 동안, 창 높이를 '키보드를 뺀 실제 보이는 높이'에
 // 맞춘다. 그러면 창 맨 아래의 툴바가 키보드 바로 위에 붙는다.
+// (데스크탑에서는 손대지 않는다. 가운데 뜬 팝업을 세로로 늘려버리면 안 되니까.)
+function 글쓰기창높이맞추기() {
+  if (!window.visualViewport || !writeDialog.open) return;
+  if (!window.matchMedia('(max-width: 700px)').matches) return;
+  writeDialog.style.height = window.visualViewport.height + 'px';
+}
+
 if (window.visualViewport) {
-  const 창높이맞추기 = () => {
-    if (writeDialog.open) {
-      writeDialog.style.height = window.visualViewport.height + 'px';
-    }
-  };
-  window.visualViewport.addEventListener('resize', 창높이맞추기);
-  window.visualViewport.addEventListener('scroll', 창높이맞추기);
+  window.visualViewport.addEventListener('resize', 글쓰기창높이맞추기);
+  window.visualViewport.addEventListener('scroll', 글쓰기창높이맞추기);
   // 창을 닫으면 높이 고정을 푼다
   writeDialog.addEventListener('close', () => { writeDialog.style.height = ''; });
 }

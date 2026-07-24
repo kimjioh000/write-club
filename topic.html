@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Nanum+Myeongjo:wght@400;800&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/main.css?v=143923">
+  <link rel="stylesheet" href="css/main.css?v=240724">
 </head>
 <body class="topic-page">
 
@@ -38,8 +38,11 @@
       <!-- 우상단 글자 수 -->
       <div class="editor__count"><span id="charCount">0</span> chars</div>
 
-      <!-- 제목 (레퍼런스에서 주제 자리) -->
-      <input class="editor__title" id="titleInput" type="text" maxlength="20" placeholder="Title" autocomplete="off">
+      <!-- 제목 (레퍼런스에서 주제 자리).
+           input이 아니라 contenteditable인 이유: 폰에서 글씨가 16px보다 작은
+           input칸을 누르면 화면이 확대되는데, contenteditable은 그러지 않는다. -->
+      <div class="editor__title is-empty" id="titleInput" contenteditable="true"
+           data-placeholder="Title"></div>
 
       <!-- 본문: 서식 있는 글 -->
       <div class="editor__body" id="bodyInput" contenteditable="true"
@@ -140,8 +143,8 @@
 
   <!-- 순서 주의: 라이브러리 → 접속 설정 → 페이지 코드 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-config.js?v=143923"></script>
-  <script src="js/auth.js?v=143923"></script>
-  <script src="js/topic.js?v=143923"></script>
+  <script src="js/supabase-config.js?v=240724"></script>
+  <script src="js/auth.js?v=240724"></script>
+  <script src="js/topic.js?v=240724"></script>
 </body>
 </html>
