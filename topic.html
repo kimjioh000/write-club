@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Nanum+Myeongjo:wght@400;800&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/main.css?v=240724b">
+  <link rel="stylesheet" href="css/main.css?v=240724c">
 </head>
 <body class="topic-page">
 
@@ -38,8 +38,11 @@
          제목칸이 자동으로 눌려 키보드가 튀어나오는 걸 막는다.
          전체화면이 먼저 뜨고, 사용자가 탭하면 그때 키보드가 올라온다. -->
     <div class="editor" tabindex="-1">
-      <!-- 우상단 글자 수 -->
-      <div class="editor__count"><span id="charCount">0</span> chars</div>
+      <!-- 상단: 왼쪽 Close, 오른쪽 글자 수 (같은 크기·높이) -->
+      <div class="editor__top">
+        <button class="editor__close" type="button" id="writeCancel">✕ Close</button>
+        <div class="editor__count"><span id="charCount">0</span> chars</div>
+      </div>
 
       <!-- 제목 (레퍼런스에서 주제 자리).
            input이 아니라 contenteditable인 이유: 폰에서 글씨가 16px보다 작은
@@ -54,9 +57,9 @@
       <p class="write-form__error" id="writeError" hidden></p>
     </div>
 
-    <!-- 하단 툴바 (키보드 위에 붙는다) -->
+    <!-- 하단 툴바 (키보드 위에 붙는다): 왼쪽 복사, 가운데 서식, 오른쪽 Done -->
     <div class="toolbar" id="writeToolbar">
-      <button class="toolbar__side" type="button" id="writeCancel">✕ Close</button>
+      <button class="toolbar__side" type="button" id="copyBody" title="Copy text">⧉ Copy</button>
 
       <div class="toolbar__tools">
         <button class="toolbar__tool" type="button" data-cmd="justifyLeft" title="Align left">⇤</button>
@@ -66,11 +69,19 @@
         <button class="toolbar__tool" type="button" data-cmd="bold" title="Bold"><b>B</b></button>
         <button class="toolbar__tool" type="button" data-cmd="italic" title="Italic"><i>I</i></button>
         <button class="toolbar__tool" type="button" data-cmd="underline" title="Underline"><u>U</u></button>
-        <span class="toolbar__sep"></span>
-        <button class="toolbar__tool" type="button" id="copyBody" title="Copy text">⧉</button>
       </div>
 
-      <button class="toolbar__side toolbar__side--done" type="button" id="writeSubmit">✓ Done</button>
+      <button class="toolbar__side toolbar__side--done" type="button" id="writeSubmit">Done</button>
+    </div>
+
+    <!-- 나가려 할 때 임시저장 여부를 묻는 확인 바 -->
+    <div class="draft-confirm" id="draftConfirm" hidden>
+      <span class="draft-confirm__ask">작성 중인 글이 있어요. 임시저장할까요?</span>
+      <div class="draft-confirm__buttons">
+        <button class="button button--quiet" type="button" id="draftKeep">계속 쓰기</button>
+        <button class="button button--quiet" type="button" id="draftDiscard">저장 안 함</button>
+        <button class="button" type="button" id="draftSave">임시저장</button>
+      </div>
     </div>
   </dialog>
 
@@ -146,8 +157,8 @@
 
   <!-- 순서 주의: 라이브러리 → 접속 설정 → 페이지 코드 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-config.js?v=240724b"></script>
-  <script src="js/auth.js?v=240724b"></script>
-  <script src="js/topic.js?v=240724b"></script>
+  <script src="js/supabase-config.js?v=240724c"></script>
+  <script src="js/auth.js?v=240724c"></script>
+  <script src="js/topic.js?v=240724c"></script>
 </body>
 </html>

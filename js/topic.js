@@ -492,6 +492,7 @@ function 글자수갱신() {
   bodyInput.classList.toggle('is-empty', count === 0);
 }
 bodyInput.addEventListener('input', 글자수갱신);
+bodyInput.addEventListener('input', () => 초안저장());
 
 // 툴바: 볼드·기울임·밑줄·정렬. execCommand는 낡았지만 이 용도엔 가장 단순하고 잘 된다.
 writeToolbar.querySelectorAll('[data-cmd]').forEach((btn) => {
@@ -594,13 +595,37 @@ document.getElementById('logoutButton').addEventListener('click', async () => {
 // 지금 고치는 중인 글. null이면 새 글을 쓰는 것이다.
 let 편집중 = null;
 
+// ===== 임시저장(초안) =====
+// 새 글을 쓰다 실수로 닫아도 잃지 않게 이 기기에만(localStorage) 저장해 둔다.
+// 주제마다 따로 보관한다. 기존 글을 '고치는 중'일 때는 초안을 만들지 않는다.
+const draftConfirm = document.getElementById('draftConfirm');
+const 초안키 = () => `writeclub:draft:${topicId}`;
+
+function 초안읽기() {
+  try { return JSON.parse(localStorage.getItem(초안키())); } catch (e) { return null; }
+}
+function 초안지우기() {
+  try { localStorage.removeItem(초안키()); } catch (e) {}
+}
+// 지금 쓰고 있는 내용을 초안으로 저장한다(내용이 없으면 지운다).
+function 초안저장() {
+  if (편집중) return; // 고치기 모드에서는 초안을 안 만든다
+  const title = titleInput.textContent.trim();
+  const body = bodyInput.innerHTML;
+  if (!title && !글자만(body).trim()) { 초안지우기(); return; }
+  try { localStorage.setItem(초안키(), JSON.stringify({ title, body })); } catch (e) {}
+}
+
 function 글쓰기창열기() {
   편집중 = null;
-  titleInput.textContent = '';
-  titleInput.classList.add('is-empty');
-  bodyInput.innerHTML = '';
+  // 저장해 둔 초안이 있으면 이어서 쓴다
+  const 초안 = 초안읽기();
+  titleInput.textContent = 초안 ? (초안.title || '') : '';
+  bodyInput.innerHTML = 초안 && 초안.body ? 안전한HTML(초안.body) : '';
+  titleInput.classList.toggle('is-empty', !(초안 && 초안.title && 초안.title.trim()));
   글자수갱신();
   writeError.hidden = true;
+  draftConfirm.hidden = true;
   writeDialog.showModal();
   글쓰기창높이맞추기();
   editorEl.focus({ preventScroll: true }); // 제목칸 대신 빈 영역 → 키보드 안 뜸
@@ -627,6 +652,7 @@ titleInput.addEventListener('keydown', (e) => {
 });
 titleInput.addEventListener('input', () => {
   titleInput.classList.toggle('is-empty', titleInput.textContent.trim() === '');
+  초안저장();
 });
 
 document.getElementById('writeButton').addEventListener('click', () => {
@@ -638,10 +664,44 @@ document.getElementById('writeButton').addEventListener('click', () => {
   글쓰기창열기();
 });
 
-document.getElementById('writeCancel').addEventListener('click', () => {
+// 글쓰기 창을 나가려 할 때: 내용이 있으면 임시저장할지 먼저 묻는다.
+function 나가기시도() {
+  // 고치기 모드거나 내용이 없으면 그냥 닫는다
+  const 내용있음 = titleInput.textContent.trim() || 글자만(bodyInput.innerHTML).trim();
+  if (편집중 || !내용있음) {
+    편집중 = null;
+    draftConfirm.hidden = true;
+    writeDialog.close();
+    return;
+  }
+  draftConfirm.hidden = false; // 임시저장 여부 확인 바를 띄운다
+}
+
+document.getElementById('writeCancel').addEventListener('click', 나가기시도);
+
+// Esc(또는 뒤로 제스처)로 닫으려 할 때도 바로 닫지 않고 같은 확인을 거친다
+writeDialog.addEventListener('cancel', (e) => {
+  e.preventDefault();
+  나가기시도();
+});
+
+// 임시저장 확인 바의 세 버튼
+document.getElementById('draftKeep').addEventListener('click', () => {
+  draftConfirm.hidden = true; // 계속 쓰기
+});
+document.getElementById('draftDiscard').addEventListener('click', () => {
+  초안지우기();
+  draftConfirm.hidden = true;
   편집중 = null;
   writeDialog.close();
 });
+document.getElementById('draftSave').addEventListener('click', () => {
+  초안저장(); // 지금 내용을 초안으로 남긴다
+  draftConfirm.hidden = true;
+  편집중 = null;
+  writeDialog.close();
+});
+
 document.getElementById('readClose').addEventListener('click', () => readDialog.close());
 
 // ===== 글 지우기 =====
@@ -739,6 +799,7 @@ writeSubmit.addEventListener('click', async () => {
   }
 
   편집중 = null;
+  초안지우기();          // 저장됐으니 임시 초안은 지운다
   writeDialog.close();
   load();
 });
@@ -755,8 +816,11 @@ function 글쓰기창높이맞추기() {
 if (window.visualViewport) {
   window.visualViewport.addEventListener('resize', 글쓰기창높이맞추기);
   window.visualViewport.addEventListener('scroll', 글쓰기창높이맞추기);
-  // 창을 닫으면 높이 고정을 푼다
-  writeDialog.addEventListener('close', () => { writeDialog.style.height = ''; });
+  // 창을 닫으면 높이 고정을 풀고, 임시저장 확인 바도 되돌린다
+  writeDialog.addEventListener('close', () => {
+    writeDialog.style.height = '';
+    draftConfirm.hidden = true;
+  });
 }
 
 // 페이지를 열면 먼저 로그인 상태부터 확인한다.
