@@ -667,6 +667,11 @@ body {
   padding: 1.6rem 2.2rem 1rem;
 }
 
+/* 창 열 때 여기에 포커스를 주지만(키보드 방지) 테두리는 안 보이게 */
+.editor:focus {
+  outline: none;
+}
+
 /* 우상단 글자 수 */
 .editor__count {
   align-self: flex-end;
@@ -1295,12 +1300,15 @@ body {
     padding: 2.4rem 1.1rem 0.9rem;
   }
 
-  /* 폰에서 입력칸 글씨가 16px보다 작으면 누르는 순간 화면이 확대된다.
-     그걸 막으려면 16px 이상이어야 한다. */
+  /* 폰에서 입력칸(input·contenteditable) 글씨가 16px보다 작으면 누르는 순간
+     화면이 확대된다(iOS). 그걸 막으려면 16px 이상이어야 한다.
+     데스크탑에서는 70%(작게) 그대로 두고, 폰에서만 16px로 올린다. */
   .write-form__title,
   .write-form__body,
   .write-form__nickname,
-  .comments__input {
+  .comments__input,
+  .editor__title,
+  .editor__body {
     font-size: 16px;
   }
 

@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Nanum+Myeongjo:wght@400;800&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/main.css?v=240724">
+  <link rel="stylesheet" href="css/main.css?v=240724b">
 </head>
 <body class="topic-page">
 
@@ -34,7 +34,10 @@
 
   <!-- 글 쓰는 창 -->
   <dialog class="sheet sheet--write" id="writeDialog">
-    <div class="editor">
+    <!-- tabindex=-1: 창이 열릴 때 여기(빈 영역)에 포커스를 줘서
+         제목칸이 자동으로 눌려 키보드가 튀어나오는 걸 막는다.
+         전체화면이 먼저 뜨고, 사용자가 탭하면 그때 키보드가 올라온다. -->
+    <div class="editor" tabindex="-1">
       <!-- 우상단 글자 수 -->
       <div class="editor__count"><span id="charCount">0</span> chars</div>
 
@@ -143,8 +146,8 @@
 
   <!-- 순서 주의: 라이브러리 → 접속 설정 → 페이지 코드 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-config.js?v=240724"></script>
-  <script src="js/auth.js?v=240724"></script>
-  <script src="js/topic.js?v=240724"></script>
+  <script src="js/supabase-config.js?v=240724b"></script>
+  <script src="js/auth.js?v=240724b"></script>
+  <script src="js/topic.js?v=240724b"></script>
 </body>
 </html>

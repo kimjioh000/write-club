@@ -9,6 +9,7 @@ const writersEl = document.getElementById('writers');
 const writeDialog = document.getElementById('writeDialog');
 const bodyInput = document.getElementById('bodyInput');   // 서식 있는 본문(contenteditable)
 const titleInput = document.getElementById('titleInput');
+const editorEl = document.querySelector('.editor');       // 창 열 때 여기에 포커스(키보드 안 뜨게)
 const charCount = document.getElementById('charCount');
 const writeError = document.getElementById('writeError');
 const writeSubmit = document.getElementById('writeSubmit');
@@ -602,7 +603,7 @@ function 글쓰기창열기() {
   writeError.hidden = true;
   writeDialog.showModal();
   글쓰기창높이맞추기();
-  titleInput.focus();
+  editorEl.focus({ preventScroll: true }); // 제목칸 대신 빈 영역 → 키보드 안 뜸
 }
 
 // 전문 창에서 Edit을 누르면 그 글 내용(서식 그대로)을 채운 채로 글쓰기 창을 연다
@@ -617,7 +618,7 @@ document.getElementById('editStart').addEventListener('click', () => {
   readDialog.close();
   writeDialog.showModal();
   글쓰기창높이맞추기();
-  titleInput.focus();
+  editorEl.focus({ preventScroll: true }); // 제목칸 대신 빈 영역 → 키보드 안 뜸
 });
 
 // 제목은 한 줄짜리다. Enter로 줄바꿈되지 않게 막고, 빈 상태 표시를 갱신한다.
