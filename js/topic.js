@@ -84,6 +84,66 @@ function 글자만(html) {
   return 그릇.textContent || '';
 }
 
+// ===== 유튜브 임베드 =====
+// 본문에 유튜브 링크가 있으면 그 자리에서 바로 재생되는 플레이어로 보여준다.
+// 보안: 아무 iframe이나 심으면 위험(XSS)하므로, 링크에서 영상 ID(11자)만 뽑아
+// 검증된 주소(youtube-nocookie)로 '내가' 플레이어를 만든다. 사용자 HTML은 안 심는다.
+const YT_PATTERN = '(?:https?:\\/\\/)?(?:www\\.|m\\.|music\\.)?(?:youtube\\.com\\/(?:watch\\?(?:\\S*&)?v=|shorts\\/|embed\\/|live\\/)|youtu\\.be\\/)([A-Za-z0-9_-]{11})\\S*';
+const 유튜브정규식 = () => new RegExp(YT_PATTERN, 'g');
+
+// 글에서 유튜브 영상 ID들을 순서대로 뽑는다
+function 유튜브ID들(text) {
+  const re = 유튜브정규식();
+  const ids = [];
+  let m;
+  while ((m = re.exec(text)) !== null) ids.push(m[1]);
+  return ids;
+}
+
+// 검증된 ID로 안전한 임베드 플레이어를 만든다
+function 플레이어(id) {
+  const wrap = document.createElement('div');
+  wrap.className = 'embed';
+  const iframe = document.createElement('iframe');
+  iframe.className = 'embed__frame';
+  iframe.src = 'https://www.youtube-nocookie.com/embed/' + id;
+  iframe.title = 'YouTube';
+  iframe.allow = 'accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+  iframe.allowFullscreen = true;
+  iframe.loading = 'lazy';
+  iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+  wrap.appendChild(iframe);
+  return wrap;
+}
+
+// 읽기 창: 본문 속 유튜브 링크를 '그 자리에서' 플레이어로 바꾼다.
+// 링크 위/아래에 쓴 글은 그대로 남아서, 영상 아래에도 이어서 읽힌다.
+function 영상심기(root) {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const 대상 = [];
+  let n;
+  while ((n = walker.nextNode())) {
+    if (/youtu/i.test(n.nodeValue) && 유튜브ID들(n.nodeValue).length) 대상.push(n);
+  }
+  대상.forEach((textNode) => {
+    const text = textNode.nodeValue;
+    const re = 유튜브정규식();
+    const frag = document.createDocumentFragment();
+    let last = 0;
+    let m;
+    while ((m = re.exec(text)) !== null) {
+      // 링크 앞에 있던 글자는 그대로 두고
+      if (m.index > last) frag.appendChild(document.createTextNode(text.slice(last, m.index)));
+      // 링크가 있던 자리에 플레이어를 끼운다
+      frag.appendChild(플레이어(m[1]));
+      last = m.index + m[0].length;
+    }
+    // 링크 뒤에 이어 쓴 글자도 그대로 둔다
+    if (last < text.length) frag.appendChild(document.createTextNode(text.slice(last)));
+    textNode.replaceWith(frag);
+  });
+}
+
 // 주소 끝의 ?id=3 에서 3을 꺼낸다
 const topicId = Number(new URLSearchParams(location.search).get('id'));
 
@@ -248,7 +308,7 @@ function render(posts) {
     // 본문 앞부분을 잘라 무늬로 쓴다. 띄어쓰기와 줄바꿈을 빼야
     // 레퍼런스처럼 빈틈없는 덩어리가 된다. 읽으라고 있는 게 아니라 질감이다.
     // 본문에 서식 태그가 들어 있으니 글자만 뽑은 뒤 공백을 없앤다
-    pattern.textContent = 글자만(post.body).replace(/\s+/g, '').slice(0, PATTERN_LENGTH);
+    pattern.textContent = 글자만(post.body).replace(유튜브정규식(), '').replace(/\s+/g, '').slice(0, PATTERN_LENGTH);
     pattern.setAttribute('aria-hidden', 'true');
 
     cluster.append(title, pattern);
@@ -308,6 +368,8 @@ function open(post) {
   readTitle.textContent = post.title;
   // 본문은 서식(볼드·기울임·밑줄·정렬)을 살려서 보여준다. 안전한 태그만 남긴다.
   readBody.innerHTML = 안전한HTML(post.body);
+  // 본문에 유튜브 링크가 있으면 재생 가능한 플레이어로 바꿔 넣는다
+  영상심기(readBody);
   readNickname.textContent = post.nickname;
   // 닉네임을 누르면 그 사람 글을 모아 보는 작가 페이지로 갈 수 있다는 표시(밑줄)
   readNickname.classList.add('is-linked');
@@ -332,6 +394,11 @@ function open(post) {
   readDialog.scrollTop = 0;
   readTitle.focus({ preventScroll: true });
 }
+
+// 읽기 창을 닫으면 영상(iframe)을 제거해 소리가 계속 나지 않게 한다
+readDialog.addEventListener('close', () => {
+  readBody.querySelectorAll('.embed').forEach((e) => e.remove());
+});
 
 // ===== 댓글 =====
 
@@ -448,14 +515,18 @@ async function load() {
 
 // ===== 글 올리기 =====
 
-// 글자 수는 서식을 뺀 순수 글자로 센다
+// 글자 수는 서식을 뺀 순수 글자로 센다. 유튜브 링크는 글자 수에서 뺀다
+// (첨부한 영상 주소로 500자를 채우는 걸 막는다).
 function 글자수갱신() {
-  const count = 글자만(bodyInput.innerHTML).trim().length;
+  const count = 글자만(bodyInput.innerHTML).replace(유튜브정규식(), '').trim().length;
   charCount.textContent = count;
   charCount.parentElement.classList.toggle('is-over', count > 500);
   // 비어 있으면 placeholder가 보이도록 표시
   bodyInput.classList.toggle('is-empty', count === 0);
 }
+
+// 글쓰기창에서는 유튜브 링크를 그냥 '글자 그대로' 둔다(플레이어를 띄우지 않는다).
+// 글자 위에 플레이어가 겹쳐 안 보이던 문제 때문. 플레이어는 읽을 때만 나온다.
 bodyInput.addEventListener('input', 글자수갱신);
 bodyInput.addEventListener('input', () => 초안저장());
 
