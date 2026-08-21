@@ -3,11 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 저장된 테마를 첫 화면 그리기 전에 적용해 깜빡임을 막는다 -->
+  <script>try{if(localStorage.getItem('writeclub:theme')==='dark')document.documentElement.dataset.theme='dark';}catch(e){}</script>
   <title>Writing Club</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Nanum+Myeongjo:wght@400;800&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/main.css?v=240724e">
+  <link rel="stylesheet" href="css/main.css?v=240821">
 </head>
 <body class="topic-page">
 
@@ -21,6 +23,7 @@
     </span>
     <button class="me__in" id="signInButton" type="button" hidden>Sign in</button>
     <button class="write-button" id="writeButton" type="button">Write</button>
+    <button class="theme-toggle" type="button" aria-label="어둡게">☾</button>
   </header>
 
   <!-- 이 단어에 글을 올린 사람들. 먼저 올린 순서대로 쌓인다 -->
@@ -163,6 +166,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js?v=240724e"></script>
   <script src="js/auth.js?v=240724e"></script>
-  <script src="js/topic.js?v=240724e"></script>
+  <script src="js/topic.js?v=240821"></script>
+  <script src="js/theme.js?v=240821"></script>
 </body>
 </html>

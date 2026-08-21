@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 저장된 테마를 첫 화면 그리기 전에 적용해 깜빡임을 막는다 -->
+  <script>try{if(localStorage.getItem('writeclub:theme')==='dark')document.documentElement.dataset.theme='dark';}catch(e){}</script>
+  <title>Writing Club</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Nanum+Myeongjo:wght@400;800&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css?v=240821">
+</head>
+<body class="author-page">
+
+  <header class="author__header">
+    <a class="home-link" href="topics.html">← Back</a>
+    <button class="theme-toggle" type="button" aria-label="어둡게">☾</button>
+  </header>
+
+  <!-- 한 사람이 모든 주제에 쓴 글을 모아 보는 자리. js/author.js가 채운다 -->
+  <main class="author">
+    <h1 class="author__name" id="authorName"></h1>
+    <p class="author__sub" id="authorSub"></p>
+    <div class="author__list" id="authorPosts"></div>
+    <p class="author__message" id="authorMessage">Loading…</p>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js?v=240821"></script>
+  <script src="js/author.js?v=240821"></script>
+  <script src="js/theme.js?v=240821"></script>
+</body>
+</html>

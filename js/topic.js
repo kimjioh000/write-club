@@ -208,7 +208,6 @@ function 겹침밀어내기() {
 
 function render(posts) {
   field.innerHTML = '';
-  이페이지글들 = posts;
 
   if (posts.length === 0) {
     fieldMessage.hidden = false;
@@ -233,8 +232,6 @@ function render(posts) {
     const cluster = document.createElement('button');
     cluster.type = 'button';
     cluster.className = `cluster ${LAYOUTS[seed % LAYOUTS.length]}`;
-    // 닉네임 클릭으로 이 글 덩어리를 찾아갈 수 있게 표식을 남긴다
-    cluster.dataset.id = post.id;
     // 세로쓰기와 명조는 뽑지 않고 돌려쓴다.
     // 무작위로 뽑으면 어떤 페이지는 명조가 하나도 안 나오고 어떤 페이지는 몰린다.
     // 나머지를 쓰면 세 글 중 하나는 반드시 명조가 된다.
@@ -290,52 +287,20 @@ function renderWriters(posts) {
     button.type = 'button';
     button.className = 'writers__name';
     button.textContent = post.nickname;
-    // 이름을 누르면 그 사람이 이 페이지에 쓴 글을 연다.
-    // 여러 편이면 누를 때마다 다음 글로 넘어간다.
-    button.addEventListener('click', () => 사람글열기(post.nickname));
+    // 이름을 누르면 그 사람이 (모든 주제에) 쓴 글을 모아 보는 작가 페이지로 간다
+    button.addEventListener('click', () => {
+      location.href = 'author.html?nick=' + encodeURIComponent(post.nickname);
+    });
     item.appendChild(button);
     writersEl.appendChild(item);
   });
 }
 
-// 지금 이 페이지에 그려진 글들. 닉네임을 눌러 같은 사람의 다음 글로 넘어갈 때 쓴다.
-let 이페이지글들 = [];
-
-// 왼쪽 명단에서 이름을 누르면, 그 사람이 이 페이지에 쓴 글을 팝업으로 연다.
-// 여러 편이면 누를 때마다 다음 글로 순환한다.
-function 사람글열기(nickname) {
-  const 그사람글 = 이페이지글들.filter((p) => p.nickname === nickname);
-  if (그사람글.length === 0) return;
-
-  // 이미 그 사람 글을 보고 있으면 다음 글로, 아니면 첫 글로
-  let 다음 = 그사람글[0];
-  if (openPost && openPost.nickname === nickname && readDialog.open) {
-    const 지금 = 그사람글.findIndex((p) => p.id === openPost.id);
-    다음 = 그사람글[(지금 + 1) % 그사람글.length];
-  }
-
-  // 배경에서 그 글 덩어리를 화면 가운데로 슝 스크롤한 뒤 팝업을 연다
-  const el = field.querySelector(`.cluster[data-id="${다음.id}"]`);
-  readDialog.close();
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  setTimeout(() => open(다음), 420);
-}
-
-// 전문 창에서 닉네임을 누르면, 같은 사람이 이 페이지에 쓴 (다음) 글로 슉 넘어간다.
+// 전문 창 아래의 닉네임을 누르면, 그 사람이 (모든 주제에) 쓴 글을
+// 모아 보는 작가 페이지로 간다.
 readNickname.addEventListener('click', () => {
   if (!openPost) return;
-  const 같은사람 = 이페이지글들.filter((p) => p.nickname === openPost.nickname);
-  if (같은사람.length < 2) return; // 글이 하나뿐이면 옮겨갈 데가 없다
-
-  // 지금 글 다음 차례로. 마지막이면 처음으로 돌아온다(순환)
-  const 지금 = 같은사람.findIndex((p) => p.id === openPost.id);
-  const 다음 = 같은사람[(지금 + 1) % 같은사람.length];
-
-  // 배경에서 그 글 덩어리를 화면 가운데로 스크롤한 뒤 전문 창을 연다
-  const el = field.querySelector(`.cluster[data-id="${다음.id}"]`);
-  readDialog.close();
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  setTimeout(() => open(다음), 420);
+  location.href = 'author.html?nick=' + encodeURIComponent(openPost.nickname);
 });
 
 function open(post) {
@@ -344,9 +309,8 @@ function open(post) {
   // 본문은 서식(볼드·기울임·밑줄·정렬)을 살려서 보여준다. 안전한 태그만 남긴다.
   readBody.innerHTML = 안전한HTML(post.body);
   readNickname.textContent = post.nickname;
-  // 같은 사람 글이 이 페이지에 둘 이상이면 닉네임이 눌러서 넘어갈 수 있다는 표시를 준다
-  const 여러편 = 이페이지글들.filter((p) => p.nickname === post.nickname).length > 1;
-  readNickname.classList.toggle('is-linked', 여러편);
+  // 닉네임을 누르면 그 사람 글을 모아 보는 작가 페이지로 갈 수 있다는 표시(밑줄)
+  readNickname.classList.add('is-linked');
   deleteError.hidden = true;
   // 창을 다시 열 때 지난번 삭제 확인 줄이 남아있지 않게 되돌린다
   document.getElementById('deleteConfirm').hidden = true;
@@ -479,6 +443,7 @@ async function load() {
   document.title = `${topicResult.data.name} — Writing Club`;
   renderWriters(postsResult.data);
   render(postsResult.data);
+  return postsResult.data;
 }
 
 // ===== 글 올리기 =====
@@ -829,5 +794,11 @@ if (window.visualViewport) {
 (async () => {
   나 = await 지금로그인한사람();
   로그인상태그리기();
-  load();
+  const posts = await load();
+  // 작가 페이지에서 특정 글을 눌러 들어온 경우(?post=), 그 글을 바로 연다
+  const 열글id = Number(new URLSearchParams(location.search).get('post'));
+  if (열글id && posts) {
+    const 그글 = posts.find((p) => p.id === 열글id);
+    if (그글) open(그글);
+  }
 })();

@@ -68,13 +68,14 @@ function showMessage(text) {
 }
 
 async function load() {
-  // 관리자 대시보드에서 정한 순서(sort)를 따른다. 같으면 id 순.
+  // 새 주제가 맨 위로 쌓이도록 최신순(역순)으로 보여준다.
+  // 관리자 순서(sort)의 역순으로, 같으면 id 역순. (예전엔 오름차순이라 새 주제가 맨 아래였다)
   const { data, error } = await db
     .from('topics')
     .select('id, name')
     .is('deleted_at', null)
-    .order('sort', { nullsFirst: false })
-    .order('id');
+    .order('sort', { ascending: false, nullsFirst: true })
+    .order('id', { ascending: false });
 
   if (error) {
     console.error('[topics] 주제를 불러오지 못했습니다:', error);

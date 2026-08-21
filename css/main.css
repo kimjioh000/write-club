@@ -592,6 +592,153 @@ body {
   color: var(--star);
 }
 
+/* ===== 작가 페이지 (한 사람이 쓴 글 모아보기) ===== */
+
+.author__header {
+  display: flex;
+  align-items: baseline;
+  padding: 3vmin 4vmin;
+}
+
+.author {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 4vmin 6vmin 12vh;
+}
+
+.author__name {
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: 1.8rem;
+  text-align: center;
+}
+
+.author__sub {
+  margin-top: 0.5rem;
+  margin-bottom: 3.2rem;
+  color: var(--ink-dim);
+  font-family: var(--sans);
+  font-size: 0.66rem;
+  text-align: center;
+}
+
+.author__message {
+  padding: 20vh 4vmin;
+  color: var(--ink-dim);
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  text-align: center;
+}
+
+/* 글 하나 = 주제표 + 제목 + 미리보기. 누르면 그 주제 페이지에서 전문이 열린다 */
+.author-post {
+  display: block;
+  padding: 1.5rem 0;
+  border-top: 1px solid #eee;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.author-post:last-child {
+  border-bottom: 1px solid #eee;
+}
+
+.author-post:hover .author-post__title,
+.author-post:focus-visible .author-post__title {
+  color: var(--star);
+}
+
+.author-post__topic {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--ink-dim);
+  font-family: var(--sans);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+}
+
+.author-post__topic::before { content: '['; }
+.author-post__topic::after  { content: ']'; }
+
+.author-post__title {
+  display: block;
+  margin-bottom: 0.6rem;
+  font-family: var(--sans);
+  font-weight: 800;
+  font-size: 1.1rem;
+  letter-spacing: -0.02em;
+  transition: color 200ms ease;
+}
+
+.author-post__preview {
+  display: block;
+  color: var(--ink-dim);
+  font-family: var(--serif);
+  font-size: 0.82rem;
+  line-height: 1.7;
+}
+
+/* ===== 작가 목록 페이지 (Writers) ===== */
+
+/* 단어 목록 페이지 좌측상단: Writers 버튼과 Back을 왼쪽에 나란히 묶는다 */
+.topics__nav {
+  display: flex;
+  align-items: baseline;
+  gap: 1.1rem;
+}
+
+.writers-index {
+  max-width: 30rem;
+  margin: 0 auto;
+  padding: 4vmin 6vmin 12vh;
+}
+
+.writers-index__title {
+  margin-bottom: 3rem;
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: 1.8rem;
+  text-align: center;
+}
+
+.writers-index__list {
+  list-style: none;
+}
+
+/* 이름 한 줄 = 왼쪽 이름, 오른쪽 글 수 */
+.writer-link {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-top: 1px solid #eee;
+  color: var(--ink);
+  text-decoration: none;
+  font-family: var(--serif);
+  font-size: 1.1rem;
+}
+
+.writers-index__list li:last-child .writer-link {
+  border-bottom: 1px solid #eee;
+}
+
+.writer-link__name {
+  transition: color 200ms ease;
+}
+
+.writer-link:hover .writer-link__name,
+.writer-link:focus-visible .writer-link__name {
+  color: var(--star);
+}
+
+.writer-link__count {
+  flex-shrink: 0;
+  color: var(--ink-dim);
+  font-family: var(--sans);
+  font-size: 0.62rem;
+}
+
 /* ===== 창 (글쓰기 / 읽기) ===== */
 
 .sheet {
@@ -1734,4 +1881,117 @@ body {
 @media (max-width: 700px) {
   .admin__kpis { grid-template-columns: repeat(2, 1fr); }
   .admin__grid { column-count: 1; }
+}
+
+/* ===== 다크모드 + 테마 토글 ===== */
+
+/* 헤더의 해·달 토글 버튼 */
+.theme-toggle {
+  flex-shrink: 0;
+  width: 1.6rem;
+  height: 1.6rem;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: none;
+  background: none;
+  color: var(--ink-dim);
+  font-size: 0.95rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 200ms ease;
+}
+
+.theme-toggle:hover {
+  color: var(--star);
+}
+
+/* topics 헤더 오른쪽: 내 이름 + 토글을 한데 묶는다 */
+.topics__right {
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+}
+
+/* 작가/Writers 헤더: Back은 왼쪽, 토글은 오른쪽으로 밀어낸다 */
+.author__header {
+  justify-content: space-between;
+}
+
+/* --- 다크 팔레트 ---
+   토글이 <html>에 data-theme="dark"를 붙이면 켜진다.
+   이미 검정으로 디자인된 페이지(랜딩·단어목록)와 관리자 페이지는 손대지 않는다. */
+:root[data-theme="dark"] {
+  --ink: #e8e6ec;
+  --ink-dim: #9a94a6;
+  --paper: #16141b;
+  --star: #7e97ff;
+}
+
+/* 변수로 안 잡힌 하드코딩 색들을 다크용으로 덮는다 */
+:root[data-theme="dark"] .sheet::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+:root[data-theme="dark"] .toolbar {
+  background: #201d27;
+  border-top-color: #2c2933;
+}
+
+:root[data-theme="dark"] .toolbar__sep {
+  background: #3a3743;
+}
+
+:root[data-theme="dark"] .toolbar__tool:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Done 버튼: 밝은 알약 + 어두운 글씨로 뒤집는다 */
+:root[data-theme="dark"] .toolbar__side--done {
+  color: #16141b;
+}
+
+:root[data-theme="dark"] .toolbar__side--done:hover {
+  background: #ffffff;
+}
+
+:root[data-theme="dark"] .draft-confirm,
+:root[data-theme="dark"] .comments,
+:root[data-theme="dark"] .delete-form,
+:root[data-theme="dark"] .author-post,
+:root[data-theme="dark"] .author-post:last-child,
+:root[data-theme="dark"] .writer-link,
+:root[data-theme="dark"] .writers-index__list li:last-child .writer-link {
+  border-color: #2c2933;
+}
+
+:root[data-theme="dark"] .write-form__title,
+:root[data-theme="dark"] .write-form__body,
+:root[data-theme="dark"] .write-form__nickname,
+:root[data-theme="dark"] .comments__input {
+  border-color: #3a3743;
+}
+
+/* 입력칸에 포커스하면 별색(파랑) 테두리는 다크에서도 유지 */
+:root[data-theme="dark"] .write-form__title:focus,
+:root[data-theme="dark"] .write-form__body:focus,
+:root[data-theme="dark"] .write-form__nickname:focus,
+:root[data-theme="dark"] .comments__input:focus {
+  border-color: var(--star);
+}
+
+/* 입력칸 안내문(placeholder) */
+:root[data-theme="dark"] .editor__title.is-empty::before,
+:root[data-theme="dark"] .editor__body.is-empty::before {
+  color: #5a5563;
+}
+
+/* 단어 페이지의 무늬(반복 제목)가 어두운 배경에 파묻히지 않게 살짝 밝힌다 */
+:root[data-theme="dark"] .cluster__pattern {
+  color: #56525f;
+}
+
+:root[data-theme="dark"] .cluster:hover .cluster__pattern,
+:root[data-theme="dark"] .cluster:focus-visible .cluster__pattern {
+  color: var(--star);
 }

@@ -3,20 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 저장된 테마를 첫 화면 그리기 전에 적용해 깜빡임을 막는다 -->
+  <script>try{if(localStorage.getItem('writeclub:theme')==='dark')document.documentElement.dataset.theme='dark';}catch(e){}</script>
   <title>Writing Club</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Nanum+Myeongjo:wght@400;800&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/main.css?v=143923">
+  <link rel="stylesheet" href="css/main.css?v=240821">
 </head>
 <body class="topics-page">
 
   <header class="topics__header">
-    <a class="home-link" href="index.html">← Back</a>
-    <span class="me" id="me" hidden>
-      <span id="meName"></span>
-      <button class="me__out" type="button" id="logoutButton">out</button>
-    </span>
+    <div class="topics__nav">
+      <a class="home-link" href="writers.html">Writers</a>
+      <a class="home-link" href="index.html">← Back</a>
+    </div>
+    <div class="topics__right">
+      <span class="me" id="me" hidden>
+        <span id="meName"></span>
+        <button class="me__out" type="button" id="logoutButton">out</button>
+      </span>
+      <button class="theme-toggle" type="button" aria-label="어둡게">☾</button>
+    </div>
   </header>
 
   <main class="topics">
@@ -30,6 +38,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js?v=143923"></script>
   <script src="js/auth.js?v=143923"></script>
-  <script src="js/topics.js?v=143923"></script>
+  <script src="js/topics.js?v=240821"></script>
+  <script src="js/theme.js?v=240821"></script>
 </body>
 </html>
